@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+
+{% block title %}Инструкции - ComeBack Admin{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'videos:create' %}" class="btn btn-primary">
+    <i class="fas fa-plus me-2"></i>Добавить видео
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <!-- Main Instructions -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-book me-2"></i>Инструкции по добавлению видео в AR приложение
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Важно!</strong> Все добавленные видео автоматически синхронизируются с Firebase и появляются в Unity приложении ComeBack.
+                </div>
+                
+                <h5 class="mt-4">Пошаговое руководство:</h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-success mb-3">
+                            <div class="card-header bg-success text-white">
+                                <strong>Шаг 1: Получение GPS координат</strong>
+                            </div>
+                            <div class="card-body">
+                                <ol>
+                                    <li>Перейдите на сайт <a href="{{ latlong_url }}" target="_blank" class="btn btn-link p-0">
+                                        <strong>LatLong.net</strong> <i class="fas fa-external-link-alt"></i>
+                                    </a></li>
+                                    <li>В поле поиска введите адрес или название места</li>
+                                    <li>Нажмите "Find" или кликните на карте</li>
+                                    <li>Скопируйте значения <strong>Latitude</strong> и <strong>Longitude</strong></li>
+                                </ol>
+                                
+                                <div class="alert alert-warning mt-3">
+                                    <small>
+                                        <strong>Примеры адресов:</strong><br>
+                                        • Tashkent, Uzbekistan<br>
+                                        • Amir Temur Square, Tashkent<br>
+                                        • 41.2995, 69.2401
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card border-info mb-3">
+                            <div class="card-header bg-info text-white">
+                                <strong>Шаг 2: Подготовка видео</strong>
+                            </div>
+                            <div class="card-body">
+                                <h6>Требования к видео:</h6>
+                                <ul>
+                                    <li><strong>Формат:</strong> Только MP4 H.264</li>
+                                    <li><strong>Разрешение:</strong> 1920x1080 или меньше</li>
+                                    <li><strong>Размер:</strong> до 5 МБ</li>
+                                    <li><strong>Длительность:</strong> до 3 минут</li>
+                                    <li><strong>Хромакей:</strong> <span style="background-color: #00b23f; color: white; padding: 2px 6px; border-radius: 3px;">#00b23f</span> (зеленый фон для прозрачности)</li>
+                                </ul>
+                                
+                                <div class="alert alert-success mt-3">
+                                    <h6><i class="fab fa-google me-2"></i>Firebase Storage</h6>
+                                    <p class="mb-0">Видео автоматически загружается в Firebase Storage и становится доступным для Unity приложения в реальном времени.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chroma Key Guide -->
+        <div class="card mb-4 border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-palette me-2"></i>Хромакей (зеленый экран) - #00b23f
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <div class="p-4" style="background-color: #00b23f; color: white; border-radius: 10px; font-size: 18px; font-weight: bold;">
+                                #00b23f
+                            </div>
+                            <small class="text-muted">RGB: 0, 178, 63</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <h6>Правила съемки с хромакеем:</h6>
+                        <ul>
+                            <li><strong>Фон:</strong> Используйте зеленый экран точно цвета <code style="background-color: #00b23f; color: white; padding: 1px 4px;">#00b23f</code></li>
+                            <li><strong>Освещение:</strong> Равномерно осветите зеленый фон, избегайте теней</li>
+                            <li><strong>Одежда:</strong> НЕ используйте зеленые оттенки в одежде и аксессуарах</li>
+                            <li><strong>Расстояние:</strong> Держите объект на расстоянии 1-2 метра от фона</li>
+                            <li><strong>Качество:</strong> Избегайте складок и неровностей на зеленом фоне</li>
+                        </ul>
+                        
+                        <div class="alert alert-warning">
+                            <strong>Важно:</strong> Unity автоматически сделает цвет <code>#00b23f</code> прозрачным в AR пространстве.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step-by-step Guide -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tasks me-2"></i>Процесс добавления видео
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i class="fas fa-map-marker-alt fa-2x"></i>
+                            </div>
+                            <h6 class="mt-2">1. Найти координаты</h6>
+                            <p class="small text-muted">Используйте LatLong.net для получения точных GPS координат места</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i class="fas fa-video fa-2x"></i>
+                            </div>
+                            <h6 class="mt-2">2. Подготовить видео</h6>
+                            <p class="small text-muted">Загрузите файл или подготовьте ссылку на видео</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i class="fas fa-save fa-2x"></i>
+                            </div>
+                            <h6 class="mt-2">3. Сохранить</h6>
+                            <p class="small text-muted">Заполните форму и сохраните - видео появится в приложении</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LatLong.net Guide -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-map me-2"></i>Как пользоваться LatLong.net
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6>Получение координат места:</h6>
+                        <ol>
+                            <li>Откройте <a href="{{ latlong_url }}" target="_blank" class="fw-bold">{{ latlong_url }}</a></li>
+                            <li>В поле "Place Name" введите адрес на английском языке</li>
+                            <li>Нажмите кнопку "Find" или Enter</li>
+                            <li>Координаты появятся в полях "Latitude" и "Longitude"</li>
+                            <li>Скопируйте эти значения в форму добавления видео</li>
+                        </ol>
+                        
+                        <div class="alert alert-success">
+                            <strong>Совет:</strong> Для более точных результатов добавляйте код страны, например: "Tashkent, UZ" вместо просто "Tashkent"
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6>Примеры координат:</h6>
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Ташкент:</strong></td>
+                                            <td>41.2995, 69.2401</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Самарканд:</strong></td>
+                                            <td>39.6542, 66.9597</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Бухара:</strong></td>
+                                            <td>39.7747, 64.4286</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-cogs me-2"></i>Технические детали
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Требования к видео:</h6>
+                        <ul>
+                            <li><strong>Формат:</strong> Только MP4 H.264</li>
+                            <li><strong>Размер файла:</strong> до 5 МБ</li>
+                            <li><strong>Длительность:</strong> до 3 минут</li>
+                            <li><strong>Разрешение:</strong> до 1920x1080</li>
+                            <li><strong>Хромакей:</strong> <span style="background-color: #00b23f; color: white; padding: 1px 4px; border-radius: 2px;">#00b23f</span></li>
+                        </ul>
+                        
+                        <h6 class="mt-3">Кодирование:</h6>
+                        <ul>
+                            <li><strong>Кодек видео:</strong> H.264</li>
+                            <li><strong>Профиль:</strong> High/Main</li>
+                            <li><strong>Битрейт:</strong> 3-8 Mbps</li>
+                            <li><strong>FPS:</strong> 24-30</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6>Как работает система:</h6>
+                        <ol>
+                            <li>Видео загружается в Firebase Storage</li>
+                            <li>Данные сохраняются в Firebase Realtime Database</li>
+                            <li>Unity получает обновления мгновенно</li>
+                            <li>AR объект появляется по GPS координатам</li>
+                            <li>Хромакей автоматически удаляется в Unity</li>
+                        </ol>
+                        
+                        <div class="alert alert-info mt-3">
+                            <small>
+                                <i class="fas fa-info-circle me-1"></i>
+                                <strong>Время появления в приложении:</strong> мгновенно после загрузки
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Action Button -->
+<div class="fixed-bottom p-3" style="z-index: 1000;">
+    <div class="text-end">
+        <a href="{% url 'videos:create' %}" class="btn btn-primary btn-lg rounded-pill shadow">
+            <i class="fas fa-plus me-2"></i>Добавить видео сейчас
+        </a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

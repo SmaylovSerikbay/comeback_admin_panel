@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+
+{% block title %}Список платежей - ComeBack Admin{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group">
+    {% if user_role == 'admin' %}
+    <a href="{% url 'dashboard:sync_payments' %}" class="btn btn-warning">
+        <i class="fab fa-google me-2"></i>Синхронизация Firebase
+    </a>
+    {% endif %}
+            <div class="btn-group">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="fas fa-filter me-2"></i>Фильтры
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?status=all&date={{ date_filter }}&type={{ payment_type_filter }}">Все статусы</a></li>
+                <li><a class="dropdown-item" href="?status=success&date={{ date_filter }}&type={{ payment_type_filter }}">Успешные</a></li>
+                <li><a class="dropdown-item" href="?status=pending&date={{ date_filter }}&type={{ payment_type_filter }}">Ожидающие</a></li>
+                <li><a class="dropdown-item" href="?status=failed&date={{ date_filter }}&type={{ payment_type_filter }}">Неуспешные</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="?status={{ status_filter }}&date=today&type={{ payment_type_filter }}">Сегодня</a></li>
+                <li><a class="dropdown-item" href="?status={{ status_filter }}&date=week&type={{ payment_type_filter }}">Неделя</a></li>
+                <li><a class="dropdown-item" href="?status={{ status_filter }}&date=month&type={{ payment_type_filter }}">Месяц</a></li>
+                <li><a class="dropdown-item" href="?status={{ status_filter }}&date=all&type={{ payment_type_filter }}">Все время</a></li>
+            </ul>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="fas fa-credit-card me-2"></i>Тип платежа
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?status={{ status_filter }}&date={{ date_filter }}&type=all">Все платежи</a></li>
+                <li><a class="dropdown-item" href="?status={{ status_filter }}&date={{ date_filter }}&type=online">Онлайн платежи</a></li>
+                <li><a class="dropdown-item" href="?status={{ status_filter }}&date={{ date_filter }}&type=cash">Наличные (OTP)</a></li>
+            </ul>
+        </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Filter Info -->
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Текущие фильтры:</strong>
+            Статус: <span class="badge bg-primary">
+                {% if status_filter == 'all' %}Все{% elif status_filter == 'success' %}Успешные{% elif status_filter == 'pending' %}Ожидающие{% elif status_filter == 'failed' %}Неуспешные{% else %}{{ status_filter }}{% endif %}
+            </span>
+            Период: <span class="badge bg-secondary">
+                {% if date_filter == 'all' %}Все время{% elif date_filter == 'today' %}Сегодня{% elif date_filter == 'week' %}Неделя{% elif date_filter == 'month' %}Месяц{% endif %}
+            </span>
+            Тип: <span class="badge bg-info">
+                {% if payment_type_filter == 'all' %}Все платежи{% elif payment_type_filter == 'online' %}Онлайн{% elif payment_type_filter == 'cash' %}Наличные (OTP){% else %}{{ payment_type_filter }}{% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Payments Table -->
+<div class="card">
+    <div class="card-body">
+        {% if page_obj %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID заказа</th>
+                            <th>Сумма</th>
+                            <th>Статус</th>
+                            <th>Метод</th>
+                            <th>Создан</th>
+                            <th>Оплачен</th>
+                            <th>Подписка</th>
+                            {% if user_role == 'admin' %}
+                            <th>Пользователь</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in page_obj %}
+                        <tr>
+                            <td>
+                                <code class="small">{{ payment.order_id|truncatechars:25 }}</code>
+                                {% if payment.is_otp %}
+                                    <br><small class="text-success"><i class="fas fa-key me-1"></i>OTP: {{ payment.otp_code }}</small>
+                                {% elif payment.payment_id %}
+                                    <br><small class="text-muted">{{ payment.payment_id|truncatechars:20 }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <strong class="h6">{{ payment.amount }} {{ payment.currency }}</strong>
+                                {% if payment.is_otp %}
+                                    <br><small class="text-success"><i class="fas fa-ticket-alt me-1"></i>{{ payment.quantity }} билетов</small>
+                                {% elif payment.description %}
+                                    <br><small class="text-muted">{{ payment.description|truncatechars:30 }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if payment.is_otp %}
+                                    {% if payment.otp_status == 'used' %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-key me-1"></i>Использован
+                                        </span>
+                                    {% elif payment.otp_status == 'active' %}
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-key me-1"></i>Активен
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-key me-1"></i>Истек
+                                        </span>
+                                    {% endif %}
+                                {% elif payment.status == 'success' %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>{{ payment.get_status_display }}
+                                    </span>
+                                {% elif payment.status == 'pending' %}
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-clock me-1"></i>{{ payment.get_status_display }}
+                                    </span>
+                                {% elif payment.status == 'failed' %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-times me-1"></i>{{ payment.get_status_display }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ payment.get_status_display }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if payment.is_otp %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-money-bill-wave me-1"></i>Наличные
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-credit-card me-1"></i>Онлайн
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>
+                                    {{ payment.created_at|date:"d.m.Y" }}<br>
+                                    <span class="text-muted">{{ payment.created_at|time:"H:i:s" }}</span>
+                                </small>
+                            </td>
+                            <td>
+                                {% if payment.paid_at %}
+                                    <small>
+                                        {{ payment.paid_at|date:"d.m.Y" }}<br>
+                                        <span class="text-muted">{{ payment.paid_at|time:"H:i:s" }}</span>
+                                    </small>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ payment.subscription_duration }} мин</span>
+                            </td>
+                            {% if user_role == 'admin' %}
+                            <td>
+                                {% if payment.user_id %}
+                                    <small>
+                                        <i class="fas fa-user me-1"></i>{{ payment.user_id|truncatechars:15 }}
+                                    </small>
+                                {% else %}
+                                    <span class="text-muted">Неизвестно</span>
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Пагинация платежей" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1&status={{ status_filter }}&date={{ date_filter }}&type={{ payment_type_filter }}">Первая</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}&date={{ date_filter }}&type={{ payment_type_filter }}">Предыдущая</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}&status={{ status_filter }}&date={{ date_filter }}&type={{ payment_type_filter }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}&date={{ date_filter }}&type={{ payment_type_filter }}">Следующая</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&status={{ status_filter }}&date={{ date_filter }}&type={{ payment_type_filter }}">Последняя</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-credit-card fa-4x text-muted mb-3"></i>
+                <h4>Платежей не найдено</h4>
+                <p class="text-muted mb-4">Попробуйте изменить фильтры или подождите новых платежей</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Summary Stats -->
+{% if page_obj %}
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h4>{{ page_obj.paginator.count }}</h4>
+                <p class="mb-0">Всего записей</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h4>{{ page_obj.paginator.num_pages }}</h4>
+                <p class="mb-0">Страниц</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h4>{{ page_obj|length }}</h4>
+                <p class="mb-0">На странице</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body text-center">
+                <h4><i class="fas fa-sync-alt"></i></h4>
+                <p class="mb-0">Автообновление</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-refresh every 30 seconds for pending payments
+{% if status_filter == 'pending' or status_filter == 'all' %}
+setInterval(function() {
+    // Only refresh if there are pending payments visible
+    const pendingBadges = document.querySelectorAll('.badge.bg-warning');
+    if (pendingBadges.length > 0) {
+        console.log('Auto-refreshing page for pending payments...');
+        window.location.reload();
+    }
+}, 30000); // 30 seconds
+{% endif %}
+
+// Add tooltips to truncated text
+document.addEventListener('DOMContentLoaded', function() {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

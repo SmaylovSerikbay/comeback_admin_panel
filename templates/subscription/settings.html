@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Настройки подписки - ComeBack Admin{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group">
+    <a href="{% url 'subscription:sync_firebase' %}" class="btn btn-warning" 
+       onclick="return confirm('Принудительно синхронизировать с Firebase?')">
+        <i class="fab fa-google me-2"></i>Синхронизация Firebase
+    </a>
+    <a href="{% url 'subscription:api_settings' %}" class="btn btn-info" target="_blank">
+        <i class="fas fa-code me-2"></i>API данные
+    </a>
+    <button type="button" class="btn btn-secondary" onclick="location.reload()">
+        <i class="fas fa-sync-alt me-2"></i>Обновить
+    </button>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<!-- Current Settings Overview -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h3 class="mb-0">{{ settings.price|floatformat:0 }}</h3>
+                    <p class="mb-0">{{ settings.currency }}</p>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-money-bill-wave fa-3x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h3 class="mb-0">{{ settings.duration_minutes }}</h3>
+                    <p class="mb-0">минут</p>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-clock fa-3x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card {% if settings.is_active %}bg-info{% else %}bg-secondary{% endif %} text-white h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h3 class="mb-0">{% if settings.is_active %}ВКЛ{% else %}ВЫКЛ{% endif %}</h3>
+                    <p class="mb-0">Статус</p>
+                </div>
+                <div class="ms-3">
+                    <i class="fas {% if settings.is_active %}fa-toggle-on{% else %}fa-toggle-off{% endif %} fa-3x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-warning text-dark h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h3 class="mb-0">Unity</h3>
+                    <p class="mb-0">Интеграция</p>
+                </div>
+                <div class="ms-3">
+                    <i class="fab fa-unity fa-3x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Form -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-cogs me-2"></i>Настройки подписки
+                </h5>
+            </div>
+            <div class="card-body">
+                {% crispy form %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Preview -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-mobile-alt me-2"></i>Предварительный просмотр в Unity
+                </h6>
+            </div>
+            <div class="card-body text-center">
+                <div class="p-3 border rounded mb-3">
+                    <h4 class="text-primary">{{ settings.price|floatformat:0 }} {{ settings.currency }}</h4>
+                    <p class="mb-1">за {{ settings.duration_minutes }} минут</p>
+                    <small class="text-muted">AR доступа</small>
+                </div>
+                
+                {% if settings.is_active %}
+                    <span class="badge bg-success">Система активна</span>
+                {% else %}
+                    <span class="badge bg-secondary">Система отключена</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Firebase Info -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fab fa-google me-2"></i>Firebase Integration
+                </h6>
+            </div>
+            <div class="card-body">
+                <h6>Структура данных:</h6>
+                <pre class="small"><code>{
+  "price": {{ settings.price }},
+  "duration_minutes": {{ settings.duration_minutes }},
+  "currency": "{{ settings.currency }}",
+  "is_active": {{ settings.is_active|yesno:"true,false" }}
+}</code></pre>
+                
+                <h6 class="mt-3">Путь в Firebase:</h6>
+                <code>/subscription_settings</code>
+                
+                <div class="alert alert-info mt-3">
+                    <small>
+                        <i class="fas fa-info-circle me-1"></i>
+                        Unity автоматически получает эти данные при запуске приложения
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Usage Instructions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-question-circle me-2"></i>Как это работает
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>1. Настройка цены</h6>
+                        <ul class="small">
+                            <li>Укажите цену в выбранной валюте</li>
+                            <li>Рекомендуется использовать UZS для Узбекистана</li>
+                            <li>Цена должна быть больше 0</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <h6>2. Время доступа</h6>
+                        <ul class="small">
+                            <li>Укажите количество минут доступа</li>
+                            <li>Минимум 1 минута, максимум 1440 (24 часа)</li>
+                            <li>Рекомендуется 30-60 минут</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <h6>3. Unity интеграция</h6>
+                        <ul class="small">
+                            <li>Unity автоматически получает настройки</li>
+                            <li>Freedom Pay использует указанную цену</li>
+                            <li>Таймер отсчитывает указанные минуты</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-refresh preview when form values change
+document.addEventListener('DOMContentLoaded', function() {
+    const priceInput = document.getElementById('id_price');
+    const durationInput = document.getElementById('id_duration_minutes');
+    const currencySelect = document.getElementById('id_currency');
+    
+    function updatePreview() {
+        // This would update the preview in real-time
+        // For now, it's static but could be enhanced with AJAX
+    }
+    
+    if (priceInput) priceInput.addEventListener('input', updatePreview);
+    if (durationInput) durationInput.addEventListener('input', updatePreview);
+    if (currencySelect) currencySelect.addEventListener('change', updatePreview);
+});
+</script>
+{% endblock %}

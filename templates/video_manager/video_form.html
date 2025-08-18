@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} - ComeBack Admin{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'videos:list' %}" class="btn btn-secondary">
+    <i class="fas fa-arrow-left me-2"></i>К списку видео
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-video me-2"></i>{{ title }}
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if is_edit and video_data %}
+                <div class="alert alert-info mb-4">
+                    <h6><i class="fas fa-info-circle me-2"></i>Текущие данные:</h6>
+                    <ul class="mb-0">
+                        <li><strong>Название:</strong> {{ video_data.name }}</li>
+                        <li><strong>Координаты:</strong> {{ video_data.x }}, {{ video_data.y }}</li>
+                        <li><strong>Видео:</strong> <a href="{{ video_data.objectURL }}" target="_blank">Firebase Storage</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+                
+                {% crispy form %}
+                
+                {% if is_edit %}
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Внимание:</strong> Если не выберете новый видео файл, текущий останется без изменений.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Coordinates Helper -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-map-marker-alt me-2"></i>Получить координаты
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="small mb-3">Используйте LatLong.net для получения точных GPS координат:</p>
+                
+                <a href="{{ latlong_url }}" target="_blank" class="btn btn-info btn-sm w-100 mb-3">
+                    <i class="fas fa-external-link-alt me-2"></i>Открыть LatLong.net
+                </a>
+                
+                <div class="small text-muted">
+                    <strong>Инструкция:</strong><br>
+                    1. Введите адрес в поле поиска<br>
+                    2. Скопируйте Latitude (широта)<br>
+                    3. Скопируйте Longitude (долгота)<br>
+                    4. Вставьте в форму слева
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preview -->
+        {% if video %}
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-eye me-2"></i>Предварительный просмотр
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if video.video_source %}
+                    <video controls class="w-100 mb-2" style="max-height: 200px;">
+                        <source src="{{ video.video_source }}" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                {% endif %}
+                
+                <div class="small">
+                    <strong>Координаты:</strong><br>
+                    Широта: {{ video.latitude }}<br>
+                    Долгота: {{ video.longitude }}
+                </div>
+                
+                {% if video.is_active %}
+                    <span class="badge bg-success mt-2">Активно</span>
+                {% else %}
+                    <span class="badge bg-secondary mt-2">Неактивно</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Tips -->
+        <div class="card mt-3">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Советы
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="small">
+                    <ul class="mb-0">
+                        <li>Используйте короткие видео (до 2 минут)</li>
+                        <li>Оптимальное разрешение: 1280x720</li>
+                        <li>Для лучшего AR эффекта снимайте на зеленом фоне</li>
+                        <li>Проверьте координаты на карте перед сохранением</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-fill coordinates helper
+function fillCoordinates(lat, lng) {
+    document.getElementById('id_latitude').value = lat;
+    document.getElementById('id_longitude').value = lng;
+}
+
+// Validate video file size
+document.addEventListener('DOMContentLoaded', function() {
+    const videoFileInput = document.getElementById('id_video_file');
+    if (videoFileInput) {
+        videoFileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const maxSize = 50 * 1024 * 1024; // 50MB
+                if (file.size > maxSize) {
+                    alert('Размер файла превышает 50 МБ. Пожалуйста, выберите файл меньшего размера или используйте URL.');
+                    this.value = '';
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

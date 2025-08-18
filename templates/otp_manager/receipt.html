@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Чек OTP {{ otp_code.code }} - ComeBack Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fas fa-print"></i> Чек для печати
+                        </h6>
+                        <button onclick="window.print()" class="btn btn-primary">
+                            <i class="fas fa-print"></i> Печать
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Чек для печати -->
+                    <div class="receipt-container" style="max-width: 300px; margin: 0 auto;">
+                        <div class="text-center mb-4">
+                            <h4 class="mb-1">ComeBack AR</h4>
+                            <p class="text-muted mb-0">Активация дополненной реальности</p>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="row mb-2">
+                            <div class="col-6"><strong>Дата:</strong></div>
+                            <div class="col-6 text-end">{{ otp_code.created_at|date:"d.m.Y" }}</div>
+                        </div>
+                        
+                        <div class="row mb-2">
+                            <div class="col-6"><strong>Время:</strong></div>
+                            <div class="col-6 text-end">{{ otp_code.created_at|date:"H:i" }}</div>
+                        </div>
+                        
+                        <div class="row mb-2">
+                            <div class="col-6"><strong>Кассир:</strong></div>
+                            <div class="col-6 text-end">{{ otp_code.created_by.username }}</div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="text-center mb-3">
+                            <h2 class="display-4 text-primary mb-1">{{ otp_code.code }}</h2>
+                            <p class="text-muted mb-0">OTP код для активации</p>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="row mb-2">
+                            <div class="col-6"><strong>Сумма:</strong></div>
+                            <div class="col-6 text-end">{{ otp_code.amount }} {{ otp_code.currency }}</div>
+                        </div>
+                        
+                        <div class="row mb-2">
+                            <div class="col-6"><strong>Количество чеков:</strong></div>
+                            <div class="col-6 text-end">{{ otp_code.quantity }}</div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="alert alert-info text-center mb-3">
+                            <small>
+                                <strong>Инструкция:</strong><br>
+                                1. Откройте приложение ComeBack<br>
+                                2. Введите OTP код: <strong>{{ otp_code.code }}</strong><br>
+                                3. Нажмите "Активировать"<br>
+                                4. AR функции будут доступны
+                            </small>
+                        </div>
+                        
+                        <div class="text-center text-muted">
+                            <small>
+                                Код действителен 24 часа<br>
+                                После использования код недействителен
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <a href="{% url 'otp_manager:otp_detail' otp_code.id %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Назад к деталям
+                        </a>
+                        <a href="{% url 'otp_manager:otp_list' %}" class="btn btn-primary">
+                            <i class="fas fa-list"></i> К списку OTP
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .card-header, .btn, hr:last-of-type, .text-center:last-of-type {
+        display: none !important;
+    }
+    
+    .receipt-container {
+        max-width: none !important;
+        margin: 0 !important;
+    }
+    
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    .card-body {
+        padding: 0 !important;
+    }
+}
+</style>
+{% endblock %}

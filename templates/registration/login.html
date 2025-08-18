@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - ComeBack Admin Panel</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="login-card">
+                    <div class="login-header text-center py-4">
+                        <i class="fas fa-video fa-3x mb-3"></i>
+                        <h2>ComeBack Admin</h2>
+                        <p class="mb-0">Панель управления AR контентом</p>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Неверное имя пользователя или пароль.
+                            </div>
+                        {% endif %}
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.username.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Имя пользователя
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-lg" 
+                                       id="{{ form.username.id_for_label }}"
+                                       name="{{ form.username.name }}" 
+                                       placeholder="Введите имя пользователя"
+                                       required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="{{ form.password.id_for_label }}" class="form-label">
+                                    <i class="fas fa-lock me-2"></i>Пароль
+                                </label>
+                                <input type="password" 
+                                       class="form-control form-control-lg" 
+                                       id="{{ form.password.id_for_label }}"
+                                       name="{{ form.password.name }}" 
+                                       placeholder="Введите пароль"
+                                       required>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                                <i class="fas fa-sign-in-alt me-2"></i>Войти
+                            </button>
+                        </form>
+                        
+                        <div class="text-center">
+                            <small class="text-muted">
+                                Доступ только для авторизованных пользователей<br>
+                                <strong>Админ:</strong> управление видео и статистика<br>
+                                <strong>Кассир:</strong> просмотр платежей
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <small class="text-white">
+                        &copy; 2025 ComeBack Admin Panel | 
+                        <a href="https://www.latlong.net/" target="_blank" class="text-white">
+                            Координаты: LatLong.net
+                        </a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
