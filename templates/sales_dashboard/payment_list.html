@@ -62,7 +62,7 @@
 <div class="card">
     <div class="card-body">
         {% if page_obj %}
-            <div class="table-responsive">
+            <div class="table-responsive d-none d-md-block">
                 <table class="table table-hover">
                     <thead class="table-light">
                         <tr>
@@ -174,6 +174,58 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Mobile Cards -->
+            <div class="d-block d-md-none">
+                {% for payment in page_obj %}
+                <div class="payment-card">
+                    <div class="payment-header">
+                        <div>
+                            <span class="badge {% if payment.is_otp %}bg-success{% elif payment.status == 'success' %}bg-success{% elif payment.status == 'pending' %}bg-warning{% elif payment.status == 'failed' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {% if payment.is_otp %}
+                                    <i class="fas fa-key me-1"></i>{% if payment.otp_status == 'active' %}Активен{% elif payment.otp_status == 'used' %}Использован{% else %}Истек{% endif %}
+                                {% else %}
+                                    {% if payment.status == 'success' %}<i class="fas fa-check me-1"></i>{% elif payment.status == 'pending' %}<i class="fas fa-clock me-1"></i>{% elif payment.status == 'failed' %}<i class="fas fa-times me-1"></i>{% endif %}{{ payment.get_status_display }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div>
+                            {% if payment.is_otp %}
+                                <span class="badge bg-success"><i class="fas fa-money-bill-wave me-1"></i>Наличные</span>
+                            {% else %}
+                                <span class="badge bg-primary"><i class="fas fa-credit-card me-1"></i>Онлайн</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mb-1">
+                        <strong>{{ payment.amount }} {{ payment.currency }}</strong>
+                        {% if payment.is_otp %}
+                            <small class="text-success ms-2"><i class="fas fa-ticket-alt me-1"></i>{{ payment.quantity }} билетов</small>
+                        {% elif payment.description %}
+                            <div class="payment-meta">{{ payment.description }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="payment-meta">
+                        <div><strong>ID:</strong> <code>{{ payment.order_id }}</code></div>
+                        {% if payment.is_otp and payment.otp_code %}
+                            <div><strong>OTP:</strong> {{ payment.otp_code }}</div>
+                        {% elif payment.payment_id %}
+                            <div><strong>PID:</strong> {{ payment.payment_id }}</div>
+                        {% endif %}
+                        <div class="mt-1">
+                            <span><strong>Создан:</strong> {{ payment.created_at|date:"d.m.Y H:i" }}</span>
+                            {% if payment.paid_at %}
+                                <span class="ms-2"><strong>Оплачен:</strong> {{ payment.paid_at|date:"d.m.Y H:i" }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="mt-1"><strong>Подписка:</strong> {{ payment.subscription_duration }} мин</div>
+                        {% if user_role == 'admin' %}
+                            <div class="mt-1"><strong>Пользователь:</strong> {% if payment.user_id %}{{ payment.user_id }}{% else %}Неизвестно{% endif %}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
             
             <!-- Pagination -->
             {% if page_obj.has_other_pages %}
@@ -225,8 +277,8 @@
 {% if page_obj %}
 <div class="row mt-4">
     <div class="col-md-3">
-        <div class="card bg-primary text-white">
-            <div class="card-body text-center">
+        <div class="card bg-primary">
+            <div class="card-body text-center white_text_in_card">
                 <h4>{{ page_obj.paginator.count }}</h4>
                 <p class="mb-0">Всего записей</p>
             </div>
@@ -234,7 +286,7 @@
     </div>
     <div class="col-md-3">
         <div class="card bg-success text-white">
-            <div class="card-body text-center">
+            <div class="card-body text-center white_text_in_card">
                 <h4>{{ page_obj.paginator.num_pages }}</h4>
                 <p class="mb-0">Страниц</p>
             </div>
@@ -242,7 +294,7 @@
     </div>
     <div class="col-md-3">
         <div class="card bg-info text-white">
-            <div class="card-body text-center">
+            <div class="card-body text-center white_text_in_card">
                 <h4>{{ page_obj|length }}</h4>
                 <p class="mb-0">На странице</p>
             </div>
@@ -250,7 +302,7 @@
     </div>
     <div class="col-md-3">
         <div class="card bg-warning text-dark">
-            <div class="card-body text-center">
+            <div class="card-body text-center white_text_in_card">
                 <h4><i class="fas fa-sync-alt"></i></h4>
                 <p class="mb-0">Автообновление</p>
             </div>

@@ -17,7 +17,7 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow">
         <div class="container">
             <a class="navbar-brand" href="{% url 'dashboard:home' %}">
                 <i class="fas fa-video me-2"></i>ComeBack Admin
@@ -28,43 +28,44 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
+                {% with ns=request.resolver_match.namespace name=request.resolver_match.url_name %}
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard:home' %}">
+                        <a class="nav-link {% if name in 'home,statistics' %}active{% endif %}" href="{% url 'dashboard:home' %}">
                             <i class="fas fa-tachometer-alt me-1"></i>Дашборд
                         </a>
                     </li>
                     
                     {% if user.userrole.role == 'admin' %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'videos:list' %}">
+                        <a class="nav-link {% if ns == 'videos' %}active{% endif %}" href="{% url 'videos:list' %}">
                             <i class="fas fa-video me-1"></i>Видео
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'videos:instructions' %}">
+                        <a class="nav-link {% if ns == 'videos' and name == 'instructions' %}active{% endif %}" href="{% url 'videos:instructions' %}">
                             <i class="fas fa-question-circle me-1"></i>Инструкции
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard:statistics' %}">
+                        <a class="nav-link {% if name == 'statistics' %}active{% endif %}" href="{% url 'dashboard:statistics' %}">
                             <i class="fas fa-chart-bar me-1"></i>Статистика
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'subscription:settings' %}">
+                        <a class="nav-link {% if ns == 'subscription' %}active{% endif %}" href="{% url 'subscription:settings' %}">
                             <i class="fas fa-cogs me-1"></i>Подписка
                         </a>
                     </li>
                     {% endif %}
                     
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard:payments' %}">
+                        <a class="nav-link {% if name in 'payments,payment_list' %}active{% endif %}" href="{% url 'dashboard:payments' %}">
                             <i class="fas fa-credit-card me-1"></i>Платежи
                         </a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="otpDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle {% if ns == 'otp_manager' %}active{% endif %}" href="#" id="otpDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-key me-1"></i>OTP Коды
                         </a>
                         <ul class="dropdown-menu">
@@ -86,7 +87,7 @@
                             <i class="fas fa-user me-1"></i>{{ user.username }}
                             <span class="badge bg-secondary ms-1">{{ user.userrole.get_role_display|default:"Кассир" }}</span>
                         </a>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{% url 'admin:index' %}">
                                 <i class="fas fa-cog me-1"></i>Админ панель
                             </a></li>
@@ -97,12 +98,13 @@
                         </ul>
                     </li>
                 </ul>
+                {% endwith %}
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="container mt-4">
+    <main class="container mt-4 fade-in">
         <!-- Messages -->
         {% if messages %}
             {% for message in messages %}
@@ -120,7 +122,7 @@
 
         <!-- Page Header -->
         {% if title %}
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
             <h1 class="h2">{{ title }}</h1>
             {% block page_actions %}{% endblock %}
         </div>
