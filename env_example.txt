@@ -1,19 +1,27 @@
-# Django Settings
-SECRET_KEY=your-secret-key-here-change-in-production
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
+# Django settings
+DEBUG=False
+SECRET_KEY=your-super-secret-key-change-in-production-2025
+ALLOWED_HOSTS=comeback.uz,www.comeback.uz,89.39.95.190,localhost,127.0.0.1
 
-# Firebase Configuration
-FIREBASE_TYPE=service_account
-FIREBASE_PROJECT_ID=comeback-2a6b2
-FIREBASE_PRIVATE_KEY_ID=your_private_key_id_here
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY_HERE\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@comeback-2a6b2.iam.gserviceaccount.com
-FIREBASE_CLIENT_ID=your_client_id_here
-FIREBASE_CLIENT_CERT_URL=https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-xxxxx%40comeback-2a6b2.iam.gserviceaccount.com
+# Database settings
+POSTGRES_DB=comeback_admin
+POSTGRES_USER=comeback_user
+POSTGRES_PASSWORD=comeback_password_2025
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
 
-# Firebase Database URL
-FIREBASE_DATABASE_URL=https://comeback-2a6b2-default-rtdb.firebaseio.com/
+# Redis settings
+REDIS_URL=redis://redis:6379/0
 
-# Firebase Storage Bucket
-FIREBASE_STORAGE_BUCKET=comeback-2a6b2.firebasestorage.app
+# Firebase settings
+FIREBASE_CREDENTIALS_PATH=/app/firebase-credentials.json
+
+# Security settings - отключаем HTTPS редирект для HTTP работы
+SECURE_SSL_REDIRECT=False
+SESSION_COOKIE_SECURE=False
+CSRF_COOKIE_SECURE=False
+SECURE_HSTS_INCLUDE_SUBDOMAINS=False
+SECURE_HSTS_PRELOAD=False
+SECURE_HSTS_SECONDS=0
+SECURE_BROWSER_XSS_FILTER=False
+SECURE_CONTENT_TYPE_NOSNIFF=False
