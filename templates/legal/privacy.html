@@ -5,167 +5,375 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy — ComeBack Admin</title>
     <meta name="robots" content="noindex,nofollow">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <style>
+      body { font-size: 18px; line-height: 1.75; }
+      h1 { font-size: 30px; margin-top: 0; }
+      h2 { font-size: 24px; margin-top: 1.25rem; }
+      h3 { font-size: 20px; margin-top: 1rem; }
+      ul, ol { margin-top: 0.5rem; }
+    </style>
 </head>
 <body>
 
-<h1>Privacy Policy</h1>
-<p>Last updated: 2025-08-19</p>
+<h1>Personal Data Processing Policy</h1>
 
-<h2>1. Introduction</h2>
-<p>This Privacy Policy (the “Policy”) explains how the ComeBack Admin panel (the “Service”) collects, uses, discloses, retains, and protects information. By using the Service, you acknowledge that you have read, understood, and agree to this Policy.</p>
+<h2>User Agreement (Terms of Service) of comeback.uz</h2>
 
-<h2>2. Scope and roles</h2>
-<p>The Service is an internal, Django-based administrative tool used by authorized personnel to manage AR content (videos with GPS coordinates), synchronize data with Firebase Realtime Database and Firebase Storage, review payments, and generate one-time passwords (OTP) for cash payments. User roles include “Administrator” and “Cashier.” Your organization acts as the data controller for information processed through the Service, and may engage third-party processors (e.g., Firebase by Google) to support functionality.</p>
+<p>This User Agreement (hereinafter the “Agreement”) governs the legal relationship between the Administration of the website comeback.uz (hereinafter the “Administration”) and any individual or legal entity using or accessing the Website (hereinafter the “User”). The Agreement is a binding contract and applies to all Users without exception.</p>
 
-<h2>3. Definitions</h2>
+<p>By using the Website, the User confirms that they have read, understood, and agreed to comply with this Agreement. If the User does not accept the terms, they must immediately stop using the Website.</p>
+
+<h2>1. Definitions</h2>
+
+<p>For the purposes of this Agreement, the following terms shall have the meanings described below:</p>
+
+<p>1.1. Website – the online resource located at the domain comeback.uz and its subdomains, including all software, databases, design elements, texts, graphics, images, videos, audio, and other materials.</p>
+<p>1.2. User – any natural person or legal entity who accesses or uses the Website.</p>
+<p>1.3. Administration – the lawful owner and operator of the Website.</p>
+<p>1.4. Account – a personal User profile created through registration on the Website.</p>
+<p>1.5. Content – all information, data, text, software, music, sound, photographs, graphics, video, messages, tags, or other materials posted, transmitted, or otherwise made available through the Website.</p>
+<p>1.6. Services – any tools, functions, or features provided by the Website, including communication, content hosting, information search, and interaction between Users.</p>
+<p>1.7. Personal Data – any information relating to an identified or identifiable User.</p>
+<p>1.8. Confidential Information – information not intended for public disclosure, including technical, business, and personal data.</p>
+<p>1.9. Third-Party Services – services, platforms, or systems provided by external organizations and integrated into the Website.</p>
+<p>1.10. Prohibited Content – materials whose publication or distribution is restricted by law or this Agreement, including but not limited to pornography, incitement to violence, or infringement of intellectual property rights.</p>
+<p>1.11. Force Majeure – extraordinary and unavoidable circumstances beyond the reasonable control of the Administration or the User.</p>
+
+<h2>2. General Provisions</h2>
+
+<p>2.1. The Website is intended for providing Users with access to information, communication features, and interactive services.</p>
+<p>2.2. The Website is not a mass media outlet.</p>
+<p>2.3. The Administration may update, modify, or suspend Website functionality at any time without notice.</p>
+<p>2.4. The Website is provided “as is” and “as available.” The Administration makes no guarantees regarding uninterrupted or error-free operation.</p>
+<p>2.5. The use of the Website is voluntary. By accessing the Website, the User agrees to all applicable rules and laws.</p>
+<p>2.6. The Administration is not responsible for the compatibility of the Website with the User’s devices, browsers, or software.</p>
+
+<h2>3. Registration and Account</h2>
+
+<p>3.1. To access certain Services, the User must register and create an Account.</p>
+<p>3.2. The User agrees to provide accurate, complete, and current information during registration.</p>
+<p>3.3. Each User may create only one Account unless otherwise permitted by the Administration.</p>
+<p>3.4. The User is solely responsible for maintaining the confidentiality of login credentials.</p>
+<p>3.5. The Administration reserves the right to suspend or delete Accounts that:</p>
 <ul>
-  <li>“Personal data” means any information relating to an identified or identifiable natural person (where applicable under local law).</li>
-  <li>“Processing” means any operation performed on information, such as collection, storage, use, disclosure, or deletion.</li>
-  <li>“Controller/Processor” have the meanings assigned under applicable data protection law (e.g., GDPR).</li>
+  <li>contain false information;</li>
+  <li>are used for fraudulent or illegal purposes;</li>
+  <li>violate the terms of this Agreement.</li>
+</ul>
+<p>3.6. The User must be at least 16 years old. Younger Users require parental consent.</p>
+
+<h2>4. Rights of the User</h2>
+
+<p>The User has the right to:</p>
+<ul>
+  <li>access and use the Website and its Services;</li>
+  <li>create, publish, and share Content in compliance with this Agreement;</li>
+  <li>communicate with other Users;</li>
+  <li>contact the Administration for support;</li>
+  <li>close or delete their Account at any time.</li>
 </ul>
 
-<h2>4. Categories of information</h2>
-<p>Depending on your role and use, we may process the following:</p>
+<h2>5. Obligations of the User</h2>
+
+<p>The User undertakes not to:</p>
 <ul>
-  <li><strong>Account data:</strong> username (login), role (Administrator/Cashier), internal identifiers. Passwords are stored as cryptographic hashes and are never stored in plain text.</li>
-  <li><strong>Operational data:</strong> video metadata (title, description, GPS coordinates), subscription settings (price, duration, currency), OTP codes (value, quantity, status, timestamps, created by), payment records (order ID, amount, currency, status, timestamps, description where provided, subscription duration, OTP/cash flag).</li>
-  <li><strong>Content and media:</strong> uploaded video files and associated descriptions; public storage URLs where applicable.</li>
-  <li><strong>Technical data:</strong> IP address, device/browser information, timestamps, session identifiers, error events, audit trails, application and server logs.</li>
-  <li><strong>Integration data:</strong> identifiers and metadata required to synchronize with Firebase services.</li>
-  <li><strong>Cookies and sessions:</strong> identifiers strictly necessary for authentication and session continuity.</li>
+  <li>post Prohibited Content, including pornography, hate speech, extremism, or fraudulent materials;</li>
+  <li>impersonate another person or organization;</li>
+  <li>attempt to hack, disrupt, or interfere with Website security;</li>
+  <li>use automated bots, scrapers, or scripts to collect data;</li>
+  <li>publish advertisements, spam, or promotional materials without consent;</li>
+  <li>distribute malware, viruses, or harmful code;</li>
+  <li>infringe upon the intellectual property rights of others;</li>
+  <li>harass, abuse, or harm other Users.</li>
+  </ul>
+
+<h2>6. Rights of the Administration</h2>
+
+<p>The Administration may:</p>
+<ul>
+  <li>establish, modify, or cancel rules governing the Website;</li>
+  <li>moderate, edit, or remove Content without explanation;</li>
+  <li>block or delete Accounts in case of violations;</li>
+  <li>restrict or terminate access to the Website for any User;</li>
+  <li>cooperate with law enforcement authorities upon request;</li>
+  <li>update the Website and introduce new Services at its discretion.</li>
 </ul>
 
-<h2>5. Sources of information</h2>
+<h2>7. Content and Intellectual Property</h2>
+
+<p>7.1. All rights to the Website, including source code, design, and structure, belong to the Administration.</p>
+<p>7.2. By publishing Content, the User grants the Administration a non-exclusive, worldwide, royalty-free license to use, store, display, reproduce, and distribute such Content for Website functionality.</p>
+<p>7.3. Users retain ownership of their original Content but remain fully responsible for its legality.</p>
+<p>7.4. The Administration may remove Content that violates laws or this Agreement.</p>
+<p>7.5. Unauthorized copying or distribution of Website materials is prohibited.</p>
+
+<h2>8. Confidentiality and Data Protection</h2>
+
+<p>8.1. The Administration processes Users’ Personal Data in accordance with the Privacy Policy of comeback.uz.</p>
+<p>8.2. Users consent to the collection, storage, and processing of their Personal Data.</p>
+<p>8.3. The Administration applies technical and organizational measures to ensure data security but cannot guarantee absolute protection against cyber threats.</p>
+
+<h2>9. Limitation of Liability</h2>
+
+<p>9.1. The User is solely responsible for the Content they publish.</p>
+<p>9.2. The Administration is not liable for:</p>
 <ul>
-  <li>Information you provide (e.g., uploading videos, creating OTP codes).</li>
-  <li>Information generated by the Service (e.g., audit logs, IDs, timestamps).</li>
-  <li>Information synchronized with third-party providers to enable functionality (e.g., Firebase).</li>
+  <li>accuracy of Content posted by Users;</li>
+  <li>any damages resulting from use of the Website;</li>
+  <li>temporary interruptions due to maintenance or technical failures;</li>
+  <li>services or products provided by third parties;</li>
+  <li>actions of other Users.</li>
 </ul>
 
-<h2>6. Purposes of processing</h2>
+<h2>10. Third-Party Services</h2>
+
+<p>10.1. The Website may contain links to third-party websites and services.</p>
+<p>10.2. The Administration does not control such websites and is not responsible for their availability, accuracy, or legality.</p>
+<p>10.3. Users use third-party services at their own risk and responsibility.</p>
+
+<h2>11. Force Majeure</h2>
+
+<p>The Administration is not responsible for failures or delays caused by circumstances beyond its control, including natural disasters, wars, government restrictions, cyberattacks, strikes, or power outages.</p>
+
+<h2>12. Governing Law and Dispute Resolution</h2>
+
+<p>12.1. This Agreement is governed by the laws of the jurisdiction where the Administration is registered.</p>
+<p>12.2. Disputes shall first be resolved through negotiations. If unresolved, disputes shall be referred to the competent court.</p>
+<p>12.3. Users agree that class actions or collective claims against the Administration are not permitted.</p>
+
+<h2>13. Term and Termination</h2>
+
+<p>13.1. This Agreement is valid indefinitely from the moment the User begins using the Website.</p>
+<p>13.2. The User may terminate use of the Website by deleting their Account.</p>
+<p>13.3. The Administration may terminate a User’s access at any time for violations of this Agreement.</p>
+
+<h2>14. Final Provisions</h2>
+
+<p>14.1. This Agreement constitutes the full understanding between the Administration and the User.</p>
+<p>14.2. If any provision is found invalid, the remaining provisions remain in full force.</p>
+<p>14.3. The Agreement is published in English. Translations into other languages are provided for convenience only.</p>
+
+<h2>Privacy Policy — Overview</h2>
+
+<p><strong>Effective date:</strong> 01 January 2025</p>
+
+<p>This Privacy Policy explains how the Administration of comeback.uz ("we", "us", "our") collects, uses, discloses, and safeguards personal data when you use the Website and related Services. By accessing or using the Website, you acknowledge that you have read and understood this Policy.</p>
+
+<h2>1. Scope and Applicability</h2>
+
+<p>This Policy applies to all personal data processed in connection with the Website and the Services. It does not apply to third-party websites, services, or applications that may be linked from the Website. We are not responsible for the privacy practices of such third parties.</p>
+
+<h2>2. Key Definitions</h2>
+
+<p>For purposes of this Policy:</p>
 <ul>
-  <li>Provide, operate, and secure the Service, including role-based access control.</li>
-  <li>Audit, log, and monitor actions for security and compliance.</li>
-  <li>Synchronize content and operational data with Firebase (Realtime Database and Storage).</li>
-  <li>Generate and track OTP codes for cash payments and present payment statistics.</li>
-  <li>Improve performance, reliability, and usability, and troubleshoot issues.</li>
+  <li><strong>Personal Data</strong>: information relating to an identified or identifiable natural person.</li>
+  <li><strong>Processing</strong>: any operation performed on Personal Data (collection, recording, organization, storage, adaptation, retrieval, use, disclosure, erasure, etc.).</li>
+  <li><strong>Controller</strong>: entity that determines the purposes and means of Processing (the Administration).</li>
+  <li><strong>Processor</strong>: entity that processes Personal Data on behalf of the Controller.</li>
+  <li><strong>Usage Data</strong>: information about how you access and use the Website (IP address, device identifiers, browser type, pages viewed, timestamps, etc.).</li>
+  <li><strong>Cookies</strong>: small files placed on your device that store information for functionality, analytics, and preferences.</li>
+  <li><strong>Anonymized/Aggregated Data</strong>: information altered so that an individual is no longer identifiable.</li>
+  <li><strong>Special Category Data</strong>: sensitive data requiring enhanced protection where applicable law defines it as such.</li>
 </ul>
 
-<h2>7. Legal bases</h2>
-<p>Where required by law, processing is carried out based on: (a) performance of a contract or assigned duties; (b) legitimate interests in operating and securing the Service; (c) compliance with legal obligations (e.g., record-keeping); and, where applicable, (d) consent.</p>
+<h2>3. Categories of Personal Data We Collect</h2>
 
-<h2>8. Retention</h2>
+<p>Depending on your interactions with the Website, we may collect the following categories:</p>
 <ul>
-  <li>Account data: retained for the life of the account and up to 12 months after deactivation, unless internal policy requires otherwise.</li>
-  <li>Logs and technical data: retained for at least 6 months, then archived or deleted per internal policy.</li>
-  <li>Content and payment records: retained per accounting, audit, operational, and legal requirements.</li>
+  <li><strong>Account Data</strong>: name, username, password, role, profile information.</li>
+  <li><strong>Contact Data</strong>: email address, phone number, preferred language, region or time zone.</li>
+  <li><strong>Content Data</strong>: information you upload or submit, including messages, forms, attachments, and media.</li>
+  <li><strong>Transaction and Billing Data</strong>: payment instrument details, billing address, transaction IDs, and receipts (when applicable).</li>
+  <li><strong>Support Data</strong>: details you provide to our support team and related communications metadata.</li>
+  <li><strong>Usage and Log Data</strong>: IP address, device identifiers, browser and operating system details, referral URLs, pages viewed, and timestamps.</li>
+  <li><strong>Device and Technical Data</strong>: device model, screen size, settings, performance metrics, and error logs.</li>
+  <li><strong>Cookies and Similar Technologies Data</strong>: information collected via cookies, pixels, and local storage.</li>
+  <li><strong>Third-Party Data</strong>: information from service providers, partners, and publicly available sources where permitted by law.</li>
 </ul>
 
-<h2>9. Disclosures and recipients</h2>
+<h2>4. Purposes and Legal Bases</h2>
+
+<p>We process Personal Data for:</p>
 <ul>
-  <li><strong>Internal:</strong> authorized personnel (Administrators, Cashiers) on a need-to-know basis.</li>
-  <li><strong>Service providers:</strong> Firebase (Google) for hosting, realtime database, and storage; processing is subject to their terms and applicable law.</li>
-  <li><strong>Legal and safety:</strong> where required by law, regulation, court order, or to protect rights, safety, or the integrity of the Service.</li>
+  <li><strong>Service Provision</strong>: to operate, maintain, and deliver features of the Website (contract performance; legitimate interests).</li>
+  <li><strong>Registration and Authentication</strong>: to create and manage accounts, verify identity, and secure access (contract performance; legitimate interests; consent where required).</li>
+  <li><strong>Customer Support</strong>: to respond to inquiries, troubleshoot, and improve support (contract performance; legitimate interests).</li>
+  <li><strong>Payments and Billing</strong>: to process transactions and comply with accounting and tax obligations (contract performance; legal obligations).</li>
+  <li><strong>Security and Fraud Prevention</strong>: to protect users, prevent misuse, and detect suspicious activity (legitimate interests; legal obligations).</li>
+  <li><strong>Analytics and Improvements</strong>: to analyze usage, test changes, and improve performance and user experience (legitimate interests; consent where required).</li>
+  <li><strong>Communications and Marketing</strong>: to send service notices and, where allowed, marketing messages (consent where required; legitimate interests; opt-out available).</li>
+  <li><strong>Compliance and Legal</strong>: to satisfy legal requirements and defend legal claims (legal obligations; legitimate interests).</li>
 </ul>
 
-<h2>10. International transfers</h2>
-<p>Use of Firebase may involve international transfers. Providers may rely on appropriate safeguards (e.g., standard contractual clauses). By using the Service, you acknowledge such transfers may occur to deliver core functionality.</p>
+<h2>5. Cookies and Similar Technologies</h2>
 
-<h2>11. Security measures</h2>
-<p>We employ organizational and technical measures, including authentication, role-based access controls, principle of least privilege, monitoring, and—where applicable—encrypted transport. No method is entirely secure; residual risk remains.</p>
-
-<h2>12. Cookies and similar technologies</h2>
-<p>We use session cookies and similar identifiers strictly necessary for authentication and session continuity. Blocking these may impair functionality.</p>
-
-<h2>13. Your rights</h2>
-<p>Subject to applicable law, you may request: (a) access; (b) rectification; (c) erasure or restriction; (d) portability (where applicable); and (e) objection to certain processing. Submit requests via your organization’s internal channels to the Service administrator. We may verify identity and may retain limited information as required by law or legitimate interests (e.g., security logs).</p>
-
-<h2>14. Children’s data</h2>
-<p>The Service is intended for authorized personnel and is not directed to children under 18.</p>
-
-<h2>15. Automated decision-making and profiling</h2>
-<p>The Service does not engage in automated decision-making or profiling that produces legal or similarly significant effects.</p>
-
-<h2>16. Data accuracy</h2>
-<p>Users are responsible for providing accurate and up-to-date information. We may request updates to maintain accuracy.</p>
-
-<h2>17. Third-party services and links</h2>
-<p>Third-party providers (e.g., Firebase by Google) process data under their own terms and privacy notices. This Policy covers processing performed by the Service only.</p>
-
-<h2>18. Changes to this Policy</h2>
-<p>We may update this Policy from time to time. The current version is available on this page. Continued use of the Service after changes constitutes acceptance.</p>
-
-<h2>19. Contact</h2>
-<p>For privacy questions or data subject requests, contact your organization’s Service administrator via internal channels.</p>
-
-<h2>20. Data processing principles</h2>
-<p>We adhere to recognized principles where applicable: lawfulness, fairness, transparency; purpose limitation; data minimization; accuracy; storage limitation; integrity and confidentiality; and accountability.</p>
-
-<h2>21. Lawful basis mapping</h2>
+<p>We use cookies to:</p>
 <ul>
-  <li>Authentication, access control, and security logging — legitimate interests; legal obligations.</li>
-  <li>Content synchronization with Firebase — performance of duties; legitimate interests.</li>
-  <li>Payment overview and OTP management — performance of duties; legal obligations (record‑keeping), where applicable.</li>
-  <li>Analytics for stability and troubleshooting — legitimate interests.</li>
+  <li>Enable essential Website functionality.</li>
+  <li>Remember preferences (such as language and region).</li>
+  <li>Analyze traffic and usage patterns.</li>
+  <li>Improve security and prevent fraud.</li>
 </ul>
 
-<h2>22. Records of processing and DPIA</h2>
-<p>Where required, your organization maintains records of processing activities and performs data protection impact assessments (DPIA) for high‑risk processing, including synchronization with third‑party services.</p>
+<p>You can manage cookies via your browser settings. Disabling certain cookies may impact Website functionality.</p>
 
-<h2>23. Sub‑processors</h2>
-<p>The Service relies on third‑party providers for hosting and synchronization (e.g., Firebase by Google). Your organization evaluates provider terms, security, and transfer mechanisms before use. Additional sub‑processors, if any, should be documented internally.</p>
+<h2>6. Analytics and Third-Party Services</h2>
 
-<h2>24. Security program overview</h2>
+<p>We may use analytics tools and third-party service providers to support hosting, data storage, communications, payments, and security. These providers process data on our instructions and are subject to appropriate contractual and technical safeguards.</p>
+
+<h2>7. How We Share Personal Data</h2>
+
+<p>We may share Personal Data with:</p>
 <ul>
-  <li>Access management: role‑based access control, least privilege, periodic reviews.</li>
-  <li>Authentication: secure credential storage, session management.</li>
-  <li>Logging and monitoring: audit trails for key actions, error/event logging.</li>
-  <li>Data handling: controlled environments for content and metadata; careful handling of public URLs.</li>
-  <li>Continuity: backups and recovery procedures as defined by organizational policy.</li>
+  <li><strong>Processors and Service Providers</strong>: hosting, analytics, messaging, payment processing, and security partners.</li>
+  <li><strong>Professional Advisors</strong>: auditors, legal counsel, and consultants under confidentiality obligations.</li>
+  <li><strong>Authorities and Law Enforcement</strong>: where required by law or to protect rights, safety, and property.</li>
+  <li><strong>Corporate Transactions</strong>: in mergers, acquisitions, or asset transfers, subject to continuity of protection measures.</li>
 </ul>
 
-<h2>25. Incident response and breach notification</h2>
-<p>Suspected incidents are investigated promptly. Where a personal‑data breach is likely to result in risk to individuals, notifications are made in accordance with applicable law and internal policy (including to supervisory authorities and affected individuals, where required).</p>
+<p>We do not sell Personal Data in the common sense of that term.</p>
 
-<h2>26. Data retention schedule (illustrative)</h2>
+<h2>8. International Transfers</h2>
+
+<p>If we transfer Personal Data across borders, we implement safeguards (such as contractual clauses and technical measures) consistent with applicable laws.</p>
+
+<h2>9. Data Retention</h2>
+
+<p>We retain Personal Data only as long as necessary for the purposes described in this Policy, to comply with legal obligations, resolve disputes, and enforce agreements. Retention periods depend on the data category and context of processing.</p>
+
+<h2>10. Security Measures</h2>
+
+<p>We employ organizational and technical measures designed to protect Personal Data from unauthorized access, alteration, disclosure, or destruction. However, no method of transmission or storage is completely secure, and we cannot guarantee absolute security.</p>
+
+<h2>11. Children’s Privacy</h2>
+
+<p>The Services are not directed to children where prohibited by applicable law. If we learn that we collected Personal Data from a child without parental consent, we will take steps to delete such information.</p>
+
+<h2>12. Your Rights</h2>
+
+<p>Depending on your jurisdiction, you may have rights to:</p>
 <ul>
-  <li>Access logs and technical events: ≥ 6 months (then archive or delete).</li>
-  <li>Operational records (payments, OTP): per accounting/audit policy (e.g., 3–5 years) unless law requires longer.</li>
-  <li>Accounts: life of account + up to 12 months post‑deactivation.</li>
-  <li>Backups: rotated per internal backup policy.</li>
+  <li>Access your Personal Data and obtain a copy.</li>
+  <li>Rectify inaccurate or incomplete Personal Data.</li>
+  <li>Request erasure in certain circumstances.</li>
+  <li>Restrict processing in certain circumstances.</li>
+  <li>Object to processing based on legitimate interests or for direct marketing.</li>
+  <li>Data portability for information you provided to us.</li>
+  <li>Withdraw consent where processing is based on consent.</li>
+  <li>Lodge a complaint with a supervisory authority, where applicable.</li>
 </ul>
 
-<h2>27. Cookies and similar technologies</h2>
+<p>To exercise these rights, contact us at the email address provided below. We may need to verify your identity before acting on your request.</p>
+
+<h2>13. Jurisdiction-Specific Disclosures</h2>
+
 <ul>
-  <li>Strictly necessary: session/authentication cookies required for core functionality.</li>
-  <li>Optional categories (if enabled by your organization): performance or functional cookies; these will be disclosed and, where required, consented to before use.</li>
+  <li><strong>EEA/UK/Switzerland (GDPR/UK GDPR)</strong>: We act as the Controller for your Personal Data. Legal bases are described in Section 4. You may contact your local data protection authority to lodge a complaint.</li>
+  <li><strong>California (CCPA/CPRA)</strong>: California residents may request disclosure, correction, deletion, opt out of certain sharing, and non-discrimination for exercising rights.</li>
 </ul>
 
-<h2>28. Data subject request handling</h2>
-<p>Requests (access, rectification, erasure, restriction, portability, objection) should be submitted via internal channels. Identification may be required. Responses will be provided within timelines required by law, subject to permissible extensions and exemptions.</p>
+<h2>14. Third-Party Links</h2>
 
-<h2>29. Complaints and supervisory authority</h2>
-<p>If you believe processing infringes applicable law, you may lodge a complaint with your organization and/or the competent data protection authority in your jurisdiction.</p>
+<p>The Website may contain links to third-party websites or services. We are not responsible for their content or privacy practices. Review their policies before submitting Personal Data.</p>
 
-<h2>30. International transfers</h2>
-<p>Where data is transferred internationally (e.g., to Firebase infrastructure), appropriate safeguards (such as standard contractual clauses) and provider measures are relied upon, where required. Your use of the Service acknowledges the necessity of such transfers for its operation.</p>
+<h2>15. Changes to This Policy</h2>
 
-<h2>31. Interpretation and conflicts</h2>
-<p>In case of conflict between this Policy and a localized/internal policy of your organization, the stricter or more specific rule shall prevail to the extent permitted by law.</p>
+<p>We may modify this Policy periodically. The "Effective date" indicates when it was last updated. Material changes may be communicated through the Website or direct notice where appropriate.</p>
 
-<h2>32. Changes and versioning</h2>
-<p>Material changes will be reflected by updating the “Last updated” date. Your continued use after changes constitutes acceptance of the revised Policy.</p>
+<h2>16. Contact Information</h2>
 
-<h2>33. Glossary</h2>
+<p>For questions or requests related to this Policy, contact us at: privacy@comeback.uz. Provide sufficient details to identify yourself and the nature of your request.</p>
+
+<h2>17. Final Provisions</h2>
+
+<p>This Privacy Policy forms part of the overall terms governing use of the Website. If any provision is deemed invalid, the remaining provisions remain in full force and effect. In the event of inconsistencies between translations, the English version prevails.</p>
+
+<h2>18. Data Subject Request (DSR) Handling</h2>
+
+<p>We maintain procedures to authenticate, log, and fulfill requests from individuals to exercise their rights. Requests are acknowledged within applicable statutory timelines. If we cannot fulfill a request due to legal constraints or conflicts with others’ rights, we will provide a clear explanation.</p>
 <ul>
-  <li><strong>AR:</strong> Augmented Reality.</li>
-  <li><strong>OTP:</strong> One‑time password used to validate cash payments.</li>
-  <li><strong>Firebase:</strong> Google services including Realtime Database and Storage used for synchronization.</li>
+  <li><strong>Submission channels</strong>: email privacy@comeback.uz; in-product settings where available.</li>
+  <li><strong>Verification</strong>: we may request reasonable information to confirm identity and entitlement.</li>
+  <li><strong>Response timelines</strong>: generally within one month, with possible extensions where permitted by law.</li>
+  <li><strong>Scope limitations</strong>: certain data may be exempt due to legal privilege, trade secrets, or third-party rights.</li>
 </ul>
 
-<p><a href="{% url 'login' %}">Back to login</a></p>
+<h2>19. Data Protection Impact Assessments (DPIA)</h2>
 
+<p>Where processing is likely to result in high risk to individuals’ rights and freedoms, we conduct DPIAs to assess and mitigate risks before launch and during material changes to processing activities.</p>
+<ul>
+  <li>Identify processing purpose, scope, context, and necessity.</li>
+  <li>Assess risks to individuals and evaluate proportionality.</li>
+  <li>Define and implement mitigating controls.</li>
+  <li>Review periodically as systems and use cases evolve.</li>
+</ul>
+
+<h2>20. Personal Data Breach Notification</h2>
+
+<p>We maintain incident response procedures. In the event of a personal data breach, we assess impact and notify authorities and affected users where required by law, including information on the nature of the breach, likely consequences, and measures taken.</p>
+
+<h2>21. Records of Processing Activities (ROPA)</h2>
+
+<p>We keep records describing categories of data subjects and personal data, purposes, recipients, transfers, retention timelines, and security measures, updated to reflect changes in our processing operations.</p>
+
+<h2>22. Retention Schedule (Illustrative)</h2>
+
+<ul>
+  <li><strong>Account data</strong>: retained for the life of the account and up to 24 months after closure, unless longer required by law.</li>
+  <li><strong>Transaction and billing data</strong>: retained for at least the statutory period required for tax and accounting.</li>
+  <li><strong>Support communications</strong>: retained up to 24 months following ticket closure.</li>
+  <li><strong>Logs and security data</strong>: retained 3–24 months depending on system criticality.</li>
+  <li><strong>Backups</strong>: retained per rolling schedules and securely destroyed upon expiration.</li>
+</ul>
+
+<h2>23. Subprocessors and Third-Party Recipients</h2>
+
+<p>We use trusted vendors for hosting, analytics, communications, payments, and security. Contracts require confidentiality, purpose limitation, and security measures aligned with applicable laws. We monitor vendor compliance and update our vendor list as needed.</p>
+
+<h2>24. Security Controls (Overview)</h2>
+
+<ul>
+  <li>Access control based on least privilege and role-based permissions.</li>
+  <li>Encryption in transit and at rest where applicable.</li>
+  <li>Network segmentation, firewalls, and intrusion detection/prevention where appropriate.</li>
+  <li>Secure development lifecycle, code reviews, and dependency management.</li>
+  <li>Vulnerability management and periodic penetration testing.</li>
+  <li>Monitoring, alerting, and incident response protocols.</li>
+  <li>Business continuity and disaster recovery planning.</li>
+</ul>
+
+<h2>25. Special Categories and Sensitive Data</h2>
+
+<p>We generally do not require special category data. If such data is processed, we will rely on a valid legal basis and implement additional safeguards appropriate to the sensitivity and risk level.</p>
+
+<h2>26. Employee Access, Training, and Confidentiality</h2>
+
+<p>Access to Personal Data is limited to personnel with a legitimate need. Employees receive training on data protection, security, and incident reporting and are bound by confidentiality obligations.</p>
+
+<h2>27. International Transfer Mechanisms</h2>
+
+<p>When transferring Personal Data internationally, we use recognized mechanisms such as contractual clauses, and apply supplementary technical and organizational measures as needed.</p>
+
+<h2>28. Glossary and Interpretation</h2>
+
+<ul>
+  <li><strong>Legitimate interests</strong>: our interest in operating and improving the Website, balanced against user rights.</li>
+  <li><strong>Processor</strong>: a third party processing data on our behalf under contract.</li>
+  <li><strong>Pseudonymization</strong>: processing data so it cannot be attributed to a specific user without additional information kept separately.</li>
+</ul>
+
+<h2>29. Frequently Asked Questions (FAQ)</h2>
+
+<h3>How can I access or delete my data?</h3>
+<p>Submit a request via privacy@comeback.uz. We will verify your identity and respond within applicable timeframes.</p>
+
+<h3>Do you sell my data?</h3>
+<p>No. We do not sell Personal Data as commonly understood by that term.</p>
+
+<h3>Can I opt out of marketing emails?</h3>
+<p>Yes. Use the unsubscribe link in emails or contact us at the address above.</p>
+ 
 </body>
 </html>
-
-
