@@ -1,51 +1,58 @@
+version: '3.8'
+
 services:
-  # PostgreSQL база данных
-  db:
-    image: postgres:15
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: comeback_admin
-      POSTGRES_USER: comeback_user
-      POSTGRES_PASSWORD: comeback_password_2025
-    restart: unless-stopped
-    networks:
-      - comeback_network
-
-  # Redis для кэширования
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    networks:
-      - comeback_network
-
-  # Django приложение
+  # Django веб-приложение
   web:
     build: .
-    volumes:
-      - media_files:/app/media
-      - static_files:/app/staticfiles
+    container_name: comeback_admin_panel-web
+    restart: unless-stopped
     environment:
       - DEBUG=False
       - SECRET_KEY=your-super-secret-key-change-in-production-2025
-      - ALLOWED_HOSTS=89.39.95.190,localhost,127.0.0.1
+      - ALLOWED_HOSTS=comeback.uz,www.comeback.uz,89.39.95.190,localhost,127.0.0.1
       - DATABASE_URL=postgresql://comeback_user:comeback_password_2025@db:5432/comeback_admin
       - REDIS_URL=redis://redis:6379/0
       - FIREBASE_CREDENTIALS_PATH=/app/firebase-credentials.json
+      - SECURE_SSL_REDIRECT=False
+      - SESSION_COOKIE_SECURE=False
+      - CSRF_COOKIE_SECURE=False
+    volumes:
+      - .:/app
+      - static_files:/var/www/static
+      - media_files:/var/www/media
     depends_on:
       - db
       - redis
+    networks:
+      - comeback_network
+
+  # PostgreSQL база данных
+  db:
+    image: postgres:15
+    container_name: comeback_admin_panel-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=comeback_admin
+      - POSTGRES_USER=comeback_user
+      - POSTGRES_PASSWORD=comeback_password_2025
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - comeback_network
+
+  # Redis для кеширования
+  redis:
+    image: redis:7-alpine
+    container_name: comeback_admin_panel-redis
     restart: unless-stopped
     networks:
       - comeback_network
-    command: >
-      sh -c "python manage.py migrate &&
-              python manage.py collectstatic --noinput &&
-              gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 comeback_admin.wsgi:application"       
 
   # Nginx веб-сервер
   nginx:
     image: nginx:alpine
+    container_name: comeback_admin_panel-nginx
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -57,7 +64,6 @@ services:
       - media_files:/var/www/media
     depends_on:
       - web
-    restart: unless-stopped
     networks:
       - comeback_network
 
@@ -67,7 +73,7 @@ services:
     volumes:
       - ./nginx/ssl:/etc/letsencrypt
       - ./nginx/www:/var/www/certbot
-    command: certonly --webroot --webroot-path=/var/www/certbot --email admin@comeback.uz --agree-tos --no-eff-email -d 89.39.95.190
+    command: certonly --webroot --webroot-path=/var/www/certbot --email admin@comeback.uz --agree-tos --no-eff-email -d comeback.uz -d www.comeback.uz
     depends_on:
       - nginx
     networks:
