@@ -7,7 +7,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                 <h1 class="h3 mb-0 text-gray-800">
                     <i class="fas fa-key"></i> OTP Коды активации
                 </h1>
@@ -40,10 +40,11 @@
                 </div>
                 <div class="card-body">
                     {% if otp_codes %}
-                        <div class="table-responsive">
+                        <!-- Desktop table -->
+                        <div class="table-responsive d-none d-md-block">
                             <table class="table table-bordered table-striped">
                                 <thead class="table-dark">
-                                    <tr>
+                                    <tr class="text-dark dark_text_in_table">
                                         <th>OTP Код</th>
                                         <th>Сумма</th>
                                         <th>Количество чеков</th>
@@ -100,6 +101,51 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
+                        </div>
+
+                        <!-- Mobile cards -->
+                        <div class="d-block d-md-none">
+                            {% for otp in otp_codes %}
+                            <div class="payment-card">
+                                <div class="payment-header">
+                                    <div>
+                                        <span class="badge bg-primary">OTP: {{ otp.code }}</span>
+                                    </div>
+                                    <div>
+                                        {% if otp.status == 'active' %}
+                                            <span class="badge bg-success">Активен</span>
+                                        {% elif otp.status == 'used' %}
+                                            <span class="badge bg-warning">Использован</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Истек</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="mb-1">
+                                    <strong>{{ otp.amount }} {{ otp.currency }}</strong>
+                                    <small class="text-success ms-2"><i class="fas fa-ticket-alt me-1"></i>{{ otp.quantity }} чеков</small>
+                                </div>
+                                <div class="payment-meta">
+                                    <div><strong>Создан:</strong> {{ otp.created_at|date:"d.m.Y H:i" }}</div>
+                                    <div><strong>Создатель:</strong> {{ otp.created_by.username }}</div>
+                                </div>
+                                <div class="mt-2 d-flex gap-2">
+                                    <a href="{% url 'otp_manager:otp_detail' otp.id %}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if otp.status == 'active' %}
+                                    <a href="{% url 'otp_manager:print_receipt' otp.id %}" class="btn btn-sm btn-success">
+                                        <i class="fas fa-print"></i>
+                                    </a>
+                                    {% endif %}
+                                    {% if otp.firebase_key %}
+                                    <a href="https://console.firebase.google.com/project/comeback-2a6b2/database/comeback-2a6b2-default-rtdb/data/activation_codes/{{ otp.firebase_key }}" target="_blank" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-fire"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
                         </div>
                     {% else %}
                         <div class="text-center py-5">

@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\Meirzhan\comeback_admin_panel\venv
+set VIRTUAL_ENV=C:\Users\Admin\Desktop\Uz-app\comeback_admin_panel\venv
 
 if not defined PROMPT set PROMPT=$P$G
 
