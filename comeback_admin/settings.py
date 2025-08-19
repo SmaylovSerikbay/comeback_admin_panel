@@ -26,6 +26,12 @@ SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=0, cast=int)
 SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
 SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=False, cast=bool)
 CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=False, cast=bool)
+
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='https://comeback.uz,https://www.comeback.uz,http://89.39.95.190', cast=lambda v: [s.strip() for s in v.split(',')])
+CSRF_COOKIE_DOMAIN = config('CSRF_COOKIE_DOMAIN', default='.comeback.uz')
+CSRF_COOKIE_HTTPONLY = config('CSRF_COOKIE_HTTPONLY', default=False, cast=bool)
+
 X_FRAME_OPTIONS = 'DENY'
 
 # Application definition
