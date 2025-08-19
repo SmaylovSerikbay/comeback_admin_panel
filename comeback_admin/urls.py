@@ -7,6 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from django.shortcuts import redirect
+from django.views.generic import TemplateView
 
 def redirect_to_dashboard(request):
     """Redirect root URL to dashboard"""
@@ -21,6 +22,9 @@ urlpatterns = [
     path('videos/', include('video_manager.urls', namespace='videos')),
     path('subscription/', include('subscription.urls', namespace='subscription')),
     path('otp/', include('otp_manager.urls', namespace='otp_manager')),
+    # Legal pages
+    path('privacy/', TemplateView.as_view(template_name='legal/privacy.html'), name='privacy'),
+    path('terms/', TemplateView.as_view(template_name='legal/terms.html'), name='terms'),
 ]
 
 # Serve media files in development
