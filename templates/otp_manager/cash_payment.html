@@ -9,7 +9,7 @@
         <div class="col-lg-8 col-md-10">
             <div class="card shadow">
                 <div class="card-header py-3 bg-success text-white">
-                    <h6 class="m-0 font-weight-bold">
+                    <h6 class="m-0 font-weight-bold text-white">
                         <i class="fas fa-money-bill-wave"></i> Принять наличный платеж
                     </h6>
                 </div>
@@ -81,11 +81,11 @@
                             </ul>
                         </div>
 
-                        <div class="d-flex justify-content-between">
-                            <a href="{% url 'otp_manager:otp_list' %}" class="btn btn-secondary">
+                        <div class="d-flex justify-content-between cash-payment-actions">
+                            <a href="{% url 'otp_manager:otp_list' %}" class="btn btn-secondary btn-sm">
                                 <i class="fas fa-arrow-left"></i> Назад к списку
                             </a>
-                            <button type="submit" class="btn btn-success btn-lg">
+                            <button type="submit" class="btn btn-success btn-sm">
                                 <i class="fas fa-check"></i> Принять наличный платеж
                             </button>
                         </div>
