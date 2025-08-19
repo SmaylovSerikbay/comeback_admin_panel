@@ -187,6 +187,18 @@ small, .text-muted { color: var(--muted-color) !important; }
 
 .form-check-input { accent-color: var(--primary-color); }
 
+/* Custom column buttons */
+@media (max-width: 768px) {
+    .costum-column-btns {
+        margin: 0 auto;
+        flex-direction: column;
+    }
+
+    .costum-column-btn {
+        width: 100%;
+    }
+}
+
 /* Badges */
 .badge {
     font-size: 0.75rem;
