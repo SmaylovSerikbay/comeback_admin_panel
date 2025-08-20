@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'sales_dashboard',
     'subscription',
     'otp_manager',
+    'payment_gateway',
 ]
 
 MIDDLEWARE = [

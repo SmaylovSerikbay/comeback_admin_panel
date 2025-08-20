@@ -21,6 +21,7 @@ urlpatterns = [
     path('videos/', include('video_manager.urls', namespace='videos')),
     path('subscription/', include('subscription.urls', namespace='subscription')),
     path('otp/', include('otp_manager.urls', namespace='otp_manager')),
+    path('payment-gateway/', include('payment_gateway.urls', namespace='payment_gateway')),
 ]
 
 # Serve media files in development

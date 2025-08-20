@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-book"></i> {{ title }}</h2>
+            
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle"></i> Базовая информация</h5>
+                <p><strong>Базовый URL:</strong> <code>{{ site_url }}</code></p>
+                <p>Все API endpoints возвращают JSON ответы.</p>
+            </div>
+            
+            <!-- Unity API -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-gamepad"></i> Unity API
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <h5>1. Создание платежа</h5>
+                    <div class="mb-3">
+                        <strong>Endpoint:</strong> <code>POST {{ site_url }}/payment-gateway/api/unity/create-payment/</code>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Заголовки:</strong>
+                        <pre><code>Content-Type: application/json</code></pre>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Тело запроса:</strong>
+                        <pre><code>{
+    "unity_user_id": "user123",
+    "amount": 1000,
+    "description": "Premium subscription"
+}</code></pre>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Ответ:</strong>
+                        <pre><code>{
+    "success": true,
+    "order_id": "unity_abc123def456",
+    "session_id": "unity_session_789",
+    "payment_url": "https://api.freedompay.uz/payment.php?...",
+    "amount": 1000,
+    "currency": "UZS"
+}</code></pre>
+                    </div>
+                    
+                    <h5>2. Проверка статуса платежа</h5>
+                    <div class="mb-3">
+                        <strong>Endpoint:</strong> <code>GET {{ site_url }}/payment-gateway/api/unity/check-status/</code>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Параметры:</strong>
+                        <ul>
+                            <li><code>order_id</code> - ID заказа (обязательно, если не указан session_id)</li>
+                            <li><code>session_id</code> - ID сессии (обязательно, если не указан order_id)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Пример запроса:</strong>
+                        <pre><code>GET {{ site_url }}/payment-gateway/api/unity/check-status/?order_id=unity_abc123def456</code></pre>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Ответ:</strong>
+                        <pre><code>{
+    "success": true,
+    "order_id": "unity_abc123def456",
+    "status": "success",
+    "amount": 1000,
+    "currency": "UZS",
+    "created_at": "2025-01-20T10:30:00Z",
+    "paid_at": "2025-01-20T10:35:00Z"
+}</code></pre>
+                    </div>
+                    
+                    <h5>3. Возможные статусы платежа</h5>
+                    <ul>
+                        <li><code>pending</code> - В ожидании оплаты</li>
+                        <li><code>success</code> - Успешно оплачен</li>
+                        <li><code>failed</code> - Неуспешный платеж</li>
+                        <li><code>cancelled</code> - Отменен</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Unity C# Пример -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-code"></i> Unity C# Пример
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <h5>Класс для работы с платежным API:</h5>
+                    <pre><code>using UnityEngine;
+using UnityEngine.Networking;
+using System.Collections;
+using System.Text;
+
+[System.Serializable]
+public class PaymentRequest
+{
+    public string unity_user_id;
+    public int amount;
+    public string description;
+}
+
+[System.Serializable]
+public class PaymentResponse
+{
+    public bool success;
+    public string order_id;
+    public string session_id;
+    public string payment_url;
+    public int amount;
+    public string currency;
+}
+
+[System.Serializable]
+public class PaymentStatusResponse
+{
+    public bool success;
+    public string order_id;
+    public string status;
+    public int amount;
+    public string currency;
+    public string created_at;
+    public string paid_at;
+}
+
+public class PaymentGateway : MonoBehaviour
+{
+    private const string BASE_URL = "{{ site_url }}/payment-gateway/api/unity/";
+    
+    public void CreatePayment(string userId, int amount, string description)
+    {
+        StartCoroutine(CreatePaymentCoroutine(userId, amount, description));
+    }
+    
+    private IEnumerator CreatePaymentCoroutine(string userId, int amount, string description)
+    {
+        var request = new PaymentRequest
+        {
+            unity_user_id = userId,
+            amount = amount,
+            description = description
+        };
+        
+        string json = JsonUtility.ToJson(request);
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
+        
+        using (UnityWebRequest www = new UnityWebRequest(BASE_URL + "create-payment/", "POST"))
+        {
+            www.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            www.downloadHandler = new DownloadHandlerBuffer();
+            www.SetRequestHeader("Content-Type", "application/json");
+            
+            yield return www.SendWebRequest();
+            
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                var response = JsonUtility.FromJson&lt;PaymentResponse&gt;(www.downloadHandler.text);
+                if (response.success)
+                {
+                    // Открываем браузер для оплаты
+                    Application.OpenURL(response.payment_url);
+                    
+                    // Сохраняем order_id для проверки статуса
+                    PlayerPrefs.SetString("CurrentOrderId", response.order_id);
+                }
+            }
+            else
+            {
+                Debug.LogError($"Ошибка создания платежа: {www.error}");
+            }
+        }
+    }
+    
+    public void CheckPaymentStatus(string orderId = null)
+    {
+        if (string.IsNullOrEmpty(orderId))
+            orderId = PlayerPrefs.GetString("CurrentOrderId", "");
+            
+        if (!string.IsNullOrEmpty(orderId))
+        {
+            StartCoroutine(CheckStatusCoroutine(orderId));
+        }
+    }
+    
+    private IEnumerator CheckStatusCoroutine(string orderId)
+    {
+        string url = $"{BASE_URL}check-status/?order_id={orderId}";
+        
+        using (UnityWebRequest www = UnityWebRequest.Get(url))
+        {
+            yield return www.SendWebRequest();
+            
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                var response = JsonUtility.FromJson&lt;PaymentStatusResponse&gt;(www.downloadHandler.text);
+                if (response.success)
+                {
+                    Debug.Log($"Статус платежа: {response.status}");
+                    
+                    if (response.status == "success")
+                    {
+                        // Платеж успешен - разблокируем контент
+                        UnlockContent();
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError($"Ошибка проверки статуса: {www.error}");
+            }
+        }
+    }
+    
+    private void UnlockContent()
+    {
+        // Здесь логика разблокировки контента
+        Debug.Log("Контент разблокирован!");
+    }
+}</code></pre>
+                </div>
+            </div>
+            
+            <!-- FreedomPay Callbacks -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exchange-alt"></i> FreedomPay Callbacks
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <p>Система автоматически обрабатывает callback'и от FreedomPay:</p>
+                    
+                    <h5>1. Check Callback</h5>
+                    <div class="mb-3">
+                        <strong>URL:</strong> <code>{{ site_url }}/payment-gateway/freedompay/check/</code>
+                        <br><strong>Метод:</strong> POST
+                        <br><strong>Описание:</strong> FreedomPay проверяет существование заказа
+                    </div>
+                    
+                    <h5>2. Result Callback</h5>
+                    <div class="mb-3">
+                        <strong>URL:</strong> <code>{{ site_url }}/payment-gateway/freedompay/result/</code>
+                        <br><strong>Метод:</strong> POST
+                        <br><strong>Описание:</strong> FreedomPay отправляет результат платежа
+                    </div>
+                    
+                    <h5>3. Success/Fail Callbacks</h5>
+                    <div class="mb-3">
+                        <strong>URLs:</strong>
+                        <ul>
+                            <li><code>{{ site_url }}/payment-gateway/freedompay/success/</code></li>
+                            <li><code>{{ site_url }}/payment-gateway/freedompay/fail/</code></li>
+                        </ul>
+                        <strong>Описание:</strong> Страницы для пользователей после оплаты
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Важно:</strong> Эти URL должны быть указаны в настройках FreedomPay как callback URLs.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Тестирование -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-flask"></i> Тестирование
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <h5>1. Тестовая форма</h5>
+                    <p>Используйте <a href="{% url 'payment_gateway:test_form' %}">тестовую форму</a> для проверки работы платежного шлюза.</p>
+                    
+                    <h5>2. Дашборд</h5>
+                    <p>Просматривайте все транзакции в <a href="{% url 'payment_gateway:dashboard' %}">дашборде платежей</a>.</p>
+                    
+                    <h5>3. Unity тестирование</h5>
+                    <p>Для тестирования Unity интеграции используйте следующие данные:</p>
+                    <ul>
+                        <li><strong>User ID:</strong> <code>test_user_123</code></li>
+                        <li><strong>Amount:</strong> <code>1000</code> (UZS)</li>
+                        <li><strong>Description:</strong> <code>Test Unity Payment</code></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Поддержка -->
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-life-ring"></i> Поддержка
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <p>Если у вас возникли вопросы по интеграции:</p>
+                    <ul>
+                        <li>Проверьте логи в дашборде</li>
+                        <li>Убедитесь, что callback URLs правильно настроены в FreedomPay</li>
+                        <li>Проверьте, что все API endpoints доступны</li>
+                    </ul>
+                    
+                    <div class="mt-3">
+                        <a href="{% url 'payment_gateway:test_form' %}" class="btn btn-primary">
+                            <i class="fas fa-credit-card"></i> Тестовая форма
+                        </a>
+                        <a href="{% url 'payment_gateway:dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-chart-bar"></i> Дашборд
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
