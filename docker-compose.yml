@@ -7,7 +7,7 @@ services:
     container_name: comeback_admin_panel-web
     restart: unless-stopped
     environment:
-      - DEBUG=False
+      - DEBUG=True
       - SECRET_KEY=your-super-secret-key-change-in-production-2025
       - ALLOWED_HOSTS=admin.comeback.uz,89.39.95.190,localhost,127.0.0.1
       - DATABASE_URL=postgresql://comeback_user:comeback_password_2025@db:5432/comeback_admin
@@ -19,6 +19,8 @@ services:
       - CSRF_TRUSTED_ORIGINS=https://admin.comeback.uz,http://89.39.95.190
       - CSRF_COOKIE_DOMAIN=
       - CSRF_COOKIE_HTTPONLY=False
+      - CSRF_USE_SESSIONS=True
+      - CSRF_FAILURE_VIEW=django.views.csrf.csrf_failure
     volumes:
       - .:/app
       - static_files:/var/www/static
