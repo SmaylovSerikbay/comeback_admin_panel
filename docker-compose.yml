@@ -16,6 +16,9 @@ services:
       - SECURE_SSL_REDIRECT=False
       - SESSION_COOKIE_SECURE=False
       - CSRF_COOKIE_SECURE=False
+      - CSRF_TRUSTED_ORIGINS=https://admin.comeback.uz,http://89.39.95.190
+      - CSRF_COOKIE_DOMAIN=
+      - CSRF_COOKIE_HTTPONLY=False
     volumes:
       - .:/app
       - static_files:/var/www/static
