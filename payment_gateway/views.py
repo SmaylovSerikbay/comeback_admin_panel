@@ -137,8 +137,8 @@ def unity_create_payment(request):
             "pg_language": "ru",
             "pg_order_id": transaction.order_id,
             "payment_origin": "unity_app",
-            "pg_success_url": "http://89.39.95.190/payment-gateway/freedompay/success/",
-            "pg_fail_url": "http://89.39.95.190/payment-gateway/freedompay/fail/"
+            "pg_success_url": "https://admin.comeback.uz/payment-gateway/freedompay/success/",
+            "pg_fail_url": "https://admin.comeback.uz/payment-gateway/freedompay/fail/"
         }
         
         signature, sign_string = generate_signature(params)
