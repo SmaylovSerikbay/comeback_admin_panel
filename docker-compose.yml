@@ -21,6 +21,8 @@ services:
       - CSRF_COOKIE_HTTPONLY=False
       - CSRF_USE_SESSIONS=True
       - CSRF_FAILURE_VIEW=django.views.csrf.csrf_failure
+      - CSRF_COOKIE_NAME=csrftoken
+      - CSRF_HEADER_NAME=HTTP_X_CSRFTOKEN
     volumes:
       - .:/app
       - static_files:/var/www/static
