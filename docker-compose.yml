@@ -68,12 +68,12 @@ services:
       - comeback_network
 
   # Certbot для SSL сертификатов
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./nginx/ssl:/etc/letsencrypt
-      - ./nginx/www:/var/www/certbot
-    command: certonly --webroot --webroot-path=/var/www/certbot --email admin@comeback.uz --agree-tos --no-eff-email -d comeback.uz -d www.comeback.uz
+         certbot:
+         image: certbot/certbot
+         volumes:
+           - ./nginx/ssl:/etc/letsencrypt
+           - ./nginx/www:/var/www/certbot
+         command: certonly --webroot --webroot-path=/var/www/certbot --email admin@comeback.uz --agree-tos --no-eff-email -d admin.comeback.uz
     depends_on:
       - nginx
     networks:
