@@ -20,7 +20,17 @@
                     <p class="lead">Ваш платеж был успешно обработан.</p>
                     <p>В ближайшее время вы получите доступ к контенту в Unity.</p>
                     
+                    <!-- 🔗 Deep Link для возврата в Unity -->
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-mobile-alt"></i>
+                        <strong>Возврат в Unity:</strong> 
+                        <span id="countdown">5</span> секунд до автоматического возврата...
+                    </div>
+                    
                     <div class="mt-4">
+                        <button id="returnToUnityBtn" class="btn btn-success btn-lg">
+                            <i class="fas fa-arrow-left"></i> Вернуться в Unity
+                        </button>
                         <a href="{% url 'payment_gateway:test_form' %}" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Новый платеж
                         </a>
@@ -33,4 +43,64 @@
         </div>
     </div>
 </div>
+
+<script>
+// 🔗 Deep Link для возврата в Unity
+const orderId = '{{ request.GET.pg_order_id }}';
+const deepLinkScheme = 'comebackar';
+const deepLinkHost = 'payment';
+
+function createDeepLink() {
+    return `${deepLinkScheme}://${deepLinkHost}?order_id=${orderId}&status=payment_success`;
+}
+
+function returnToUnity() {
+    const deepLink = createDeepLink();
+    console.log('🔗 Возврат в Unity через deep link:', deepLink);
+    
+    try {
+        // Пробуем открыть deep link
+        window.location.href = deepLink;
+        
+        // Fallback: если deep link не сработал, показываем инструкцию
+        setTimeout(() => {
+            document.getElementById('returnToUnityBtn').innerHTML = 
+                '<i class="fas fa-copy"></i> Скопировать ссылку для Unity';
+            document.getElementById('returnToUnityBtn').onclick = () => {
+                navigator.clipboard.writeText(deepLink);
+                alert('Ссылка скопирована! Вставьте её в Unity для возврата.');
+            };
+        }, 2000);
+        
+    } catch (error) {
+        console.error('❌ Ошибка возврата в Unity:', error);
+        alert('Ошибка возврата в Unity. Попробуйте вернуться вручную.');
+    }
+}
+
+// Автоматический возврат через 5 секунд
+let countdown = 5;
+const countdownElement = document.getElementById('countdown');
+
+const timer = setInterval(() => {
+    countdown--;
+    countdownElement.textContent = countdown;
+    
+    if (countdown <= 0) {
+        clearInterval(timer);
+        returnToUnity();
+    }
+}, 1000);
+
+// Кнопка для немедленного возврата
+document.getElementById('returnToUnityBtn').onclick = returnToUnity;
+
+// Обработка видимости страницы (если пользователь вернулся в Unity)
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        console.log('🔗 Страница скрыта - возможно, пользователь вернулся в Unity');
+        clearInterval(timer);
+    }
+});
+</script>
 {% endblock %}
