@@ -9,7 +9,7 @@ services:
     environment:
       - DEBUG=False
       - SECRET_KEY=your-super-secret-key-change-in-production-2025
-      - ALLOWED_HOSTS=comeback.uz,www.comeback.uz,89.39.95.190,localhost,127.0.0.1
+      - ALLOWED_HOSTS=admin.comeback.uz,89.39.95.190,localhost,127.0.0.1
       - DATABASE_URL=postgresql://comeback_user:comeback_password_2025@db:5432/comeback_admin
       - REDIS_URL=redis://redis:6379/0
       - FIREBASE_CREDENTIALS_PATH=/app/firebase-credentials.json
@@ -68,12 +68,12 @@ services:
       - comeback_network
 
   # Certbot для SSL сертификатов
-         certbot:
-         image: certbot/certbot
-         volumes:
-           - ./nginx/ssl:/etc/letsencrypt
-           - ./nginx/www:/var/www/certbot
-         command: certonly --webroot --webroot-path=/var/www/certbot --email admin@comeback.uz --agree-tos --no-eff-email -d admin.comeback.uz
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./nginx/ssl:/etc/letsencrypt
+      - ./nginx/www:/var/www/certbot
+    command: certonly --webroot --webroot-path=/var/www/certbot --email admin@comeback.uz --agree-tos --no-eff-email -d admin.comeback.uz
     depends_on:
       - nginx
     networks:
