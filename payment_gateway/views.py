@@ -359,7 +359,32 @@ def freedompay_success(request):
         
         return HttpResponse("OK", status=200)
     
-    # GET запрос - показываем страницу
+    # GET запрос - проверяем параметры FreedomPay и обновляем статус
+    if request.GET:
+        log_message("✅ Получен GET запрос на /success с параметрами")
+        log_message(f"📨 GET параметры: {dict(request.GET)}")
+        
+        pg_order_id = request.GET.get('pg_order_id')
+        if pg_order_id:
+            try:
+                transaction = PaymentTransaction.objects.get(order_id=pg_order_id)
+                if transaction.status == 'pending':
+                    transaction.mark_as_paid()
+                    
+                    # Создаем callback запись
+                    PaymentCallback.objects.create(
+                        transaction=transaction,
+                        callback_type='success',
+                        raw_data=dict(request.GET),
+                        processed=True
+                    )
+                    
+                    log_message(f"✅ Установлен статус 'success' для Order ID: {pg_order_id}")
+                else:
+                    log_message(f"ℹ️ Транзакция {pg_order_id} уже имеет статус: {transaction.status}")
+            except PaymentTransaction.DoesNotExist:
+                log_message(f"❌ Заказ {pg_order_id} не найден")
+    
     return render(request, 'payment_gateway/success.html')
 
 
@@ -395,7 +420,32 @@ def freedompay_fail(request):
         
         return HttpResponse("OK", status=200)
     
-    # GET запрос - показываем страницу
+    # GET запрос - проверяем параметры FreedomPay и обновляем статус
+    if request.GET:
+        log_message("❌ Получен GET запрос на /fail с параметрами")
+        log_message(f"📨 GET параметры: {dict(request.GET)}")
+        
+        pg_order_id = request.GET.get('pg_order_id')
+        if pg_order_id:
+            try:
+                transaction = PaymentTransaction.objects.get(order_id=pg_order_id)
+                if transaction.status == 'pending':
+                    transaction.mark_as_failed()
+                    
+                    # Создаем callback запись
+                    PaymentCallback.objects.create(
+                        transaction=transaction,
+                        callback_type='fail',
+                        raw_data=dict(request.GET),
+                        processed=True
+                    )
+                    
+                    log_message(f"❌ Установлен статус 'failed' для Order ID: {pg_order_id}")
+                else:
+                    log_message(f"ℹ️ Транзакция {pg_order_id} уже имеет статус: {transaction.status}")
+            except PaymentTransaction.DoesNotExist:
+                log_message(f"❌ Заказ {pg_order_id} не найден")
+    
     return render(request, 'payment_gateway/fail.html')
 
 
