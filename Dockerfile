@@ -1,12 +1,12 @@
 # Используем официальный Python образ
-FROM python:3.11-slim
+FROM python:3.11-slim-bullseye
 
 # Debian slim images sometimes include an APT post-invoke hook that can fail
 # on some hosts/filesystems; disable it to make builds reliable.
 RUN rm -f /etc/apt/apt.conf.d/docker-clean || true
 
 # Устанавливаем системные зависимости
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     libpq-dev \
