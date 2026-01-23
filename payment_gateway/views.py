@@ -24,7 +24,7 @@ MERCHANT_ID = "552170"
 SECRET_KEY = "wUQ18x3bzP86MUzn"
 
 # URL для перенаправления
-SITE_URL = "https://admin.comeback.uz"  # Боевой домен
+SITE_URL = "http://89.39.95.247"  # Используем IP адрес
 
 
 def log_message(msg):
@@ -137,8 +137,8 @@ def unity_create_payment(request):
             "pg_language": "ru",
             "pg_order_id": transaction.order_id,
             "payment_origin": "unity_app",
-            "pg_success_url": "https://admin.comeback.uz/payment-gateway/freedompay/success/",
-            "pg_fail_url": "https://admin.comeback.uz/payment-gateway/freedompay/fail/"
+            "pg_success_url": "http://89.39.95.247/payment-gateway/freedompay/success/",
+            "pg_fail_url": "http://89.39.95.247/payment-gateway/freedompay/fail/"
         }
         
         signature, sign_string = generate_signature(params)
@@ -528,8 +528,8 @@ def test_payment_form(request):
             "pg_language": "ru",
             "pg_order_id": transaction.order_id,
             "payment_origin": "test_form",
-            "pg_success_url": "https://admin.comeback.uz/payment-gateway/freedompay/success/",
-            "pg_fail_url": "https://admin.comeback.uz/payment-gateway/freedompay/fail/"
+            "pg_success_url": "http://89.39.95.247/payment-gateway/freedompay/success/",
+            "pg_fail_url": "http://89.39.95.247/payment-gateway/freedompay/fail/"
         }
         
         signature, sign_string = generate_signature(params)
