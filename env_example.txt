@@ -1,7 +1,7 @@
 # Django settings
 DEBUG=False
 SECRET_KEY=your-super-secret-key-change-in-production-2025
-ALLOWED_HOSTS=comeback.uz,www.comeback.uz,89.39.95.190,localhost,127.0.0.1
+ALLOWED_HOSTS=admin.comeback.uz,comeback.uz,www.comeback.uz,89.39.95.247,localhost,127.0.0.1
 
 # Database settings
 POSTGRES_DB=comeback_admin

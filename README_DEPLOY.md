@@ -17,7 +17,7 @@
 
 ### Шаг 1: Подключение к VDS
 ```bash
-ssh root@89.39.95.190
+ssh root@89.39.95.247
 ```
 
 ### Шаг 2: Автоматическое развертывание
@@ -142,7 +142,7 @@ chmod +x setup_firewall.sh
 ### SSL сертификаты
 ```bash
 # Автоматический SSL
-docker-compose run --rm certbot certonly --webroot --webroot-path=/var/www/certbot -d 89.39.95.190
+docker-compose run --rm certbot certonly --webroot --webroot-path=/var/www/certbot -d admin.comeback.uz
 
 # Перезапуск nginx
 docker-compose restart nginx
@@ -253,9 +253,9 @@ tar -xzf media_backup_file.tar.gz
 
 После успешного развертывания:
 
-- **HTTP**: http://89.39.95.190
-- **HTTPS**: https://89.39.95.190
-- **Admin**: http://89.39.95.190/admin/
+- **HTTP**: http://89.39.95.247
+- **HTTPS**: https://admin.comeback.uz
+- **Admin**: https://admin.comeback.uz/admin/
 
 ## 📞 Поддержка
 
@@ -281,7 +281,7 @@ tar -xzf media_backup_file.tar.gz
 
 Ваше приложение **Comeback Admin Panel** успешно развернуто на VDS!
 
-**IP адрес**: 89.39.95.190  
+**IP адрес**: 89.39.95.247  
 **Статус**: 🟢 Работает  
 **Версия**: 1.0  
 **Последнее обновление**: 2025-01-08

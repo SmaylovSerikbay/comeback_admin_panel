@@ -4,13 +4,13 @@
 
 - VDS с Ubuntu 20.04+ или CentOS 8+
 - SSH доступ к серверу
-- Домен или IP адрес (в нашем случае: 89.39.95.190)
+- Домен или IP адрес (в нашем случае: 89.39.95.247)
 - Минимум 2GB RAM, 20GB дискового пространства
 
 ## 🔧 Шаг 1: Подключение к VDS
 
 ```bash
-ssh root@89.39.95.190
+ssh root@89.39.95.247
 ```
 
 ## 🐳 Шаг 2: Установка Docker и Docker Compose
@@ -138,8 +138,8 @@ UserRole.objects.create(user=cashier_user, role='cashier')
 
 ### 6.1 Автоматический SSL с Let's Encrypt
 ```bash
-# Запускаем certbot для получения SSL сертификата
-docker-compose run --rm certbot certonly --webroot --webroot-path=/var/www/certbot -d 89.39.95.190
+# Запускаем certbot для получения SSL сертификата (для домена)
+docker-compose run --rm certbot certonly --webroot --webroot-path=/var/www/certbot -d admin.comeback.uz
 
 # Перезапускаем nginx
 docker-compose restart nginx
@@ -175,7 +175,7 @@ docker-compose logs db
 
 ### 7.2 Проверка веб-интерфейса
 - Откройте браузер
-- Перейдите по адресу: `http://89.39.95.190` или `https://89.39.95.190`
+- Перейдите по адресу: `http://89.39.95.247` или `https://admin.comeback.uz`
 - Войдите с созданными учетными данными
 
 ## 🔧 Шаг 8: Управление приложением

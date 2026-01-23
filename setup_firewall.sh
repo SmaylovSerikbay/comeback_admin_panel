@@ -47,13 +47,16 @@ ufw allow from 127.0.0.1
 ufw allow from ::1
 
 # Дополнительные порты для разработки (опционально)
-read -p "Разрешить дополнительные порты для разработки? (y/n): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "🔧 Разрешаем дополнительные порты..."
+# По умолчанию: НЕ открываем. Чтобы открыть, запустите так:
+#   ALLOW_DEV_PORTS=y ./setup_firewall.sh
+ALLOW_DEV_PORTS="${ALLOW_DEV_PORTS:-n}"
+if [[ "${ALLOW_DEV_PORTS}" =~ ^[Yy]$ ]]; then
+    echo "🔧 Разрешаем дополнительные порты для разработки..."
     ufw allow 8000/tcp  # Django development
     ufw allow 5432/tcp  # PostgreSQL
     ufw allow 6379/tcp  # Redis
+else
+    echo "✅ Дополнительные dev-порты не открываем (ALLOW_DEV_PORTS=${ALLOW_DEV_PORTS})"
 fi
 
 # Включаем firewall

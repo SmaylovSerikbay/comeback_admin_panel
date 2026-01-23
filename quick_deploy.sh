@@ -6,7 +6,7 @@
 set -e
 
 echo "🚀 Быстрое развертывание Comeback Admin Panel на VDS..."
-echo "IP: 89.39.95.190"
+echo "IP: 89.39.95.247"
 echo ""
 
 # Цвета для вывода
@@ -96,7 +96,7 @@ if [ ! -f ".env" ]; then
 # Django Settings
 DEBUG=False
 SECRET_KEY=$(python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())")
-ALLOWED_HOSTS=89.39.95.190,localhost,127.0.0.1
+ALLOWED_HOSTS=admin.comeback.uz,89.39.95.247,localhost,127.0.0.1
 
 # Database
 POSTGRES_DB=comeback_admin
@@ -166,8 +166,8 @@ echo ""
 echo "🎉 Развертывание завершено!"
 echo ""
 echo "📱 Ваше приложение доступно по адресам:"
-echo "   HTTP:  http://89.39.95.190"
-echo "   HTTPS: https://89.39.95.190"
+echo "   HTTP:  http://89.39.95.247"
+echo "   HTTPS: https://89.39.95.247"
 echo ""
 echo "🔧 Полезные команды:"
 echo "   Просмотр логов: docker-compose logs -f"
