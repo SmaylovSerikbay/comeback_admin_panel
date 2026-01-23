@@ -35,7 +35,7 @@ services:
 
   # PostgreSQL база данных
   db:
-    image: postgres:13
+    image: postgres:11
     container_name: comeback_admin_panel-db
     restart: unless-stopped
     environment:
