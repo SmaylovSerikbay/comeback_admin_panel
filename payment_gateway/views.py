@@ -530,8 +530,6 @@ def test_payment_form(request):
             "payment_origin": "test_form",
             "pg_success_url": "https://admin.comeback.uz/payment-gateway/freedompay/success/",
             "pg_fail_url": "https://admin.comeback.uz/payment-gateway/freedompay/fail/"
-            "pg_success_url": "https://admin.comeback.uz/payment-gateway/freedompay/success/",
-            "pg_fail_url": "https://admin.comeback.uz/payment-gateway/freedompay/fail/"
         }
         
         signature, sign_string = generate_signature(params)
