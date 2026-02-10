@@ -3,6 +3,15 @@ DEBUG=False
 SECRET_KEY=your-super-secret-key-change-in-production-2025
 ALLOWED_HOSTS=admin.comeback.uz,comeback.uz,www.comeback.uz,89.39.95.247,localhost,127.0.0.1
 
+# Server URLs (важно для Unity и платежей)
+SITE_URL=https://admin.comeback.uz
+SITE_DOMAIN=admin.comeback.uz
+USE_HTTPS=True
+
+# FreedomPay Settings
+FREEDOMPAY_MERCHANT_ID=552170
+FREEDOMPAY_SECRET_KEY=wUQ18x3bzP86MUzn
+
 # Database settings
 POSTGRES_DB=comeback_admin
 POSTGRES_USER=comeback_user

@@ -7,6 +7,8 @@ urlpatterns = [
     # Unity API endpoints
     path('api/unity/create-payment/', views.unity_create_payment, name='unity_create_payment'),
     path('api/unity/check-status/', views.unity_check_payment_status, name='unity_check_status'),
+    path('api/unity/health/', views.unity_health_check, name='unity_health_check'),
+    path('api/unity/server-info/', views.unity_server_info, name='unity_server_info'),
     
     # FreedomPay callbacks
     path('freedompay/check/', views.freedompay_check, name='freedompay_check'),

@@ -16,15 +16,33 @@ from django.utils import timezone
 from django.conf import settings
 from .models import PaymentTransaction, PaymentCallback, UnityPaymentSession
 from django.db import models
+from decouple import config
 
 logger = logging.getLogger(__name__)
 
 # Конфигурация FreedomPay
-MERCHANT_ID = "552170"
-SECRET_KEY = "wUQ18x3bzP86MUzn"
+MERCHANT_ID = config('FREEDOMPAY_MERCHANT_ID', default="552170")
+SECRET_KEY = config('FREEDOMPAY_SECRET_KEY', default="wUQ18x3bzP86MUzn")
 
-# URL для перенаправления
-SITE_URL = "http://89.39.95.247"  # Используем IP адрес
+# URL для перенаправления - теперь из переменных окружения
+# Поддержка как IP адреса, так и домена
+SITE_URL = config('SITE_URL', default='http://89.39.95.247')
+SITE_DOMAIN = config('SITE_DOMAIN', default='admin.comeback.uz')
+USE_HTTPS = config('USE_HTTPS', default=False, cast=bool)
+
+
+def get_base_url():
+    """
+    Получить базовый URL для callback'ов
+    Автоматически определяет правильный протокол и хост
+    """
+    protocol = 'https' if USE_HTTPS else 'http'
+    
+    # Если используется домен, используем его, иначе IP
+    if SITE_DOMAIN and SITE_DOMAIN != 'admin.comeback.uz':
+        return f"{protocol}://{SITE_DOMAIN}"
+    else:
+        return SITE_URL
 
 
 def log_message(msg):
@@ -127,6 +145,9 @@ def unity_create_payment(request):
             merchant_id=MERCHANT_ID
         )
         
+        # Получаем базовый URL
+        base_url = get_base_url()
+        
         # Генерируем подпись
         params = {
             "pg_merchant_id": MERCHANT_ID,
@@ -137,8 +158,8 @@ def unity_create_payment(request):
             "pg_language": "ru",
             "pg_order_id": transaction.order_id,
             "payment_origin": "unity_app",
-            "pg_success_url": "http://89.39.95.247/payment-gateway/freedompay/success/",
-            "pg_fail_url": "http://89.39.95.247/payment-gateway/freedompay/fail/"
+            "pg_success_url": f"{base_url}/payment-gateway/freedompay/success/",
+            "pg_fail_url": f"{base_url}/payment-gateway/freedompay/fail/"
         }
         
         signature, sign_string = generate_signature(params)
@@ -518,6 +539,9 @@ def test_payment_form(request):
             merchant_id=MERCHANT_ID
         )
         
+        # Получаем базовый URL
+        base_url = get_base_url()
+        
         # Генерируем подпись
         params = {
             "pg_merchant_id": MERCHANT_ID,
@@ -528,8 +552,8 @@ def test_payment_form(request):
             "pg_language": "ru",
             "pg_order_id": transaction.order_id,
             "payment_origin": "test_form",
-            "pg_success_url": "http://89.39.95.247/payment-gateway/freedompay/success/",
-            "pg_fail_url": "http://89.39.95.247/payment-gateway/freedompay/fail/"
+            "pg_success_url": f"{base_url}/payment-gateway/freedompay/success/",
+            "pg_fail_url": f"{base_url}/payment-gateway/freedompay/fail/"
         }
         
         signature, sign_string = generate_signature(params)
@@ -556,7 +580,89 @@ def api_documentation(request):
     """
     Документация API для Unity разработчиков
     """
+    base_url = get_base_url()
     return render(request, 'payment_gateway/api_docs.html', {
         'title': 'API Документация',
-        'site_url': SITE_URL
+        'site_url': base_url,
+        'base_url': base_url
     })
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def unity_health_check(request):
+    """
+    Health check endpoint для Unity - проверка доступности сервера
+    """
+    try:
+        # Проверяем доступ к базе данных
+        from django.db import connection
+        connection.ensure_connection()
+        
+        base_url = get_base_url()
+        
+        return JsonResponse({
+            'success': True,
+            'status': 'healthy',
+            'server_time': timezone.now().isoformat(),
+            'base_url': base_url,
+            'endpoints': {
+                'create_payment': f'{base_url}/payment-gateway/api/unity/create-payment/',
+                'check_status': f'{base_url}/payment-gateway/api/unity/check-status/'
+            },
+            'version': '1.0',
+            'merchant_id': MERCHANT_ID
+        })
+    except Exception as e:
+        log_message(f"❌ Health check failed: {e}")
+        return JsonResponse({
+            'success': False,
+            'status': 'unhealthy',
+            'error': str(e)
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def unity_server_info(request):
+    """
+    Endpoint для получения информации о сервере Unity
+    Используется для диагностики проблем с подключением
+    """
+    try:
+        base_url = get_base_url()
+        
+        info = {
+            'success': True,
+            'server_info': {
+                'base_url': base_url,
+                'site_url': SITE_URL,
+                'domain': SITE_DOMAIN,
+                'use_https': USE_HTTPS,
+                'protocol': 'https' if USE_HTTPS else 'http'
+            },
+            'endpoints': {
+                'create_payment': f'{base_url}/payment-gateway/api/unity/create-payment/',
+                'check_status': f'{base_url}/payment-gateway/api/unity/check-status/',
+                'health_check': f'{base_url}/payment-gateway/api/unity/health/',
+                'server_info': f'{base_url}/payment-gateway/api/unity/server-info/'
+            },
+            'freedompay': {
+                'merchant_id': MERCHANT_ID,
+                'success_url': f'{base_url}/payment-gateway/freedompay/success/',
+                'fail_url': f'{base_url}/payment-gateway/freedompay/fail/'
+            },
+            'server_time': timezone.now().isoformat(),
+            'version': '1.0'
+        }
+        
+        log_message(f"📊 Unity запросил информацию о сервере")
+        
+        return JsonResponse(info)
+        
+    except Exception as e:
+        log_message(f"❌ Ошибка получения информации о сервере: {e}")
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
