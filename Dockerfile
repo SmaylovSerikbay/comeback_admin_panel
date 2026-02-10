@@ -12,9 +12,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Создаем пользователя ДО копирования файлов (оптимизация)
-RUN useradd --create-home --shell /bin/bash app
-
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
@@ -23,9 +20,11 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем код приложения
-COPY --chown=app:app . .
+COPY . .
 
-# Переключаемся на пользователя app
+# Создаем пользователя для безопасности
+RUN useradd --create-home --shell /bin/bash app && \
+    chown -R app:app /app
 USER app
 
 # Собираем статические файлы
