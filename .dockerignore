@@ -1,43 +1,67 @@
-# Git
+# ===============================================
+# КРИТИЧНО: Игнорировать большие директории
+# ===============================================
+
+# Virtual environments (САМОЕ ВАЖНОЕ!)
+venv/
+venv
+ENV/
+env/
+.venv/
+*.egg-info/
+
+# Git (большая директория)
+.git/
 .git
 .gitignore
+.gitattributes
 
+# Media files (могут быть большими)
+media/
+media
+staticfiles/
+staticfiles
+
+# ===============================================
 # Python
+# ===============================================
+__pycache__/
 __pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
 *.pyc
 *.pyo
 *.pyd
-.Python
-env
 pip-log.txt
 pip-delete-this-directory.txt
-.tox
+
+# Testing
+.tox/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
-*.log
-.git
-.mypy_cache
-.pytest_cache
-.hypothesis
+.hypothesis/
+.pytest_cache/
 
-# Virtual environments
-venv/
-ENV/
-env/
-.venv/
-
-# IDEs
+# ===============================================
+# IDEs and Editors
+# ===============================================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+*.sublime-*
+.history/
 
+# ===============================================
 # OS
+# ===============================================
 .DS_Store
 .DS_Store?
 ._*
@@ -45,36 +69,70 @@ env/
 .Trashes
 ehthumbs.db
 Thumbs.db
+desktop.ini
 
+# ===============================================
 # Django
+# ===============================================
 *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media/
-staticfiles/
 
-# Environment files
+# ===============================================
+# Environment and Config
+# ===============================================
 .env
+.env.*
+*.env
 .env.local
 .env.production
+.env.backup*
 
-# Documentation
-README.md
+# ===============================================
+# Documentation (НЕ НУЖНО в Docker образе)
+# ===============================================
 *.md
+README.md
+CHANGELOG.md
+LICENSE
 docs/
+*.txt.backup
 
-# Scripts
+# ===============================================
+# Build and Deploy Scripts
+# ===============================================
 *.bat
 *.sh
+deploy.sh
 setup.bat
 run_server.bat
+quick_deploy.sh
+monitor.sh
+setup_firewall.sh
+*.ps1
 
-# Firebase
-firebase-credentials.json
-*.json
-
-# Docker
+# ===============================================
+# Docker (избегаем рекурсии)
+# ===============================================
 Dockerfile
+Dockerfile.*
 docker-compose.yml
+docker-compose.*.yml
 .dockerignore
+
+# ===============================================
+# Nginx и SSL
+# ===============================================
+nginx/ssl/
+nginx/www/
+
+# ===============================================
+# Временные файлы
+# ===============================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+.~*

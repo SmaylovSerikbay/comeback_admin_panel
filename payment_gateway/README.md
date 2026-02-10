@@ -2,6 +2,17 @@
 
 Django приложение для интеграции Unity с платежной системой FreedomPay.
 
+## ✅ Обновление 1.1 (2025-01-10)
+
+**Исправлена критическая ошибка:** Unity "Endpoint unavailable - check server settings"
+
+### Что нового:
+- ✅ Гибкая конфигурация URL через переменные окружения
+- ✅ Новые endpoints для диагностики (health check, server info)
+- ✅ Автоматическое определение правильного протокола (HTTP/HTTPS)
+- ✅ Подробная документация по интеграции Unity
+- ✅ Руководства по устранению неполадок
+
 ## Возможности
 
 - ✅ Создание платежей через Unity API
@@ -10,6 +21,8 @@ Django приложение для интеграции Unity с платежн�
 - ✅ Административный дашборд для мониторинга
 - ✅ Полная интеграция с Django Admin
 - ✅ Логирование всех операций
+- ✅ Health check для проверки доступности сервера
+- ✅ Server info endpoint для получения конфигурации
 
 ## Установка
 
@@ -20,6 +33,18 @@ Django приложение для интеграции Unity с платежн�
 ## API Endpoints
 
 ### Unity API
+
+#### Health Check (НОВОЕ!)
+```
+GET /payment-gateway/api/unity/health/
+```
+Проверка доступности сервера и получение актуальных endpoints
+
+#### Server Info (НОВОЕ!)
+```
+GET /payment-gateway/api/unity/server-info/
+```
+Получение полной информации о конфигурации сервера
 
 #### Создание платежа
 ```
@@ -71,15 +96,56 @@ GET /payment-gateway/api/unity/check-status/?order_id=unity_abc123
 
 ## Unity Интеграция
 
-Смотрите пример C# кода в API документации для интеграции с Unity.
+### Быстрый старт:
+
+```csharp
+// В FreedomPayManager.cs
+private string serverUrl = "https://admin.comeback.uz";
+
+void Start()
+{
+    StartCoroutine(CheckServerHealth());
+}
+
+IEnumerator CheckServerHealth()
+{
+    string healthUrl = serverUrl + "/payment-gateway/api/unity/health/";
+    using (UnityWebRequest request = UnityWebRequest.Get(healthUrl))
+    {
+        yield return request.SendWebRequest();
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            Debug.Log("✅ Server available: " + request.downloadHandler.text);
+        }
+        else
+        {
+            Debug.LogError("❌ Server unavailable: " + request.error);
+        }
+    }
+}
+```
+
+### Полная документация:
+- **UNITY_INTEGRATION.md** - детальное руководство по интеграции
+- **QUICK_FIX.md** - быстрое исправление проблем
+- **TROUBLESHOOTING.md** - устранение неполадок
 
 ## Настройка FreedomPay
 
-В настройках FreedomPay укажите следующие callback URLs:
-- Check: `https://comeback.uz/payment-gateway/freedompay/check/`
-- Result: `https://comeback.uz/payment-gateway/freedompay/result/`
-- Success: `https://comeback.uz/payment-gateway/freedompay/success/`
-- Fail: `https://comeback.uz/payment-gateway/freedompay/fail/`
+### Переменные окружения (.env):
+```env
+SITE_URL=https://admin.comeback.uz
+SITE_DOMAIN=admin.comeback.uz
+USE_HTTPS=True
+FREEDOMPAY_MERCHANT_ID=552170
+FREEDOMPAY_SECRET_KEY=wUQ18x3bzP86MUzn
+```
+
+### Callback URLs в настройках FreedomPay:
+- Check: `https://admin.comeback.uz/payment-gateway/freedompay/check/`
+- Result: `https://admin.comeback.uz/payment-gateway/freedompay/result/`
+- Success: `https://admin.comeback.uz/payment-gateway/freedompay/success/`
+- Fail: `https://admin.comeback.uz/payment-gateway/freedompay/fail/`
 
 ## Логирование
 
@@ -91,3 +157,22 @@ GET /payment-gateway/api/unity/check-status/?order_id=unity_abc123
 - Проверка подписи всех входящих запросов
 - Валидация входных данных
 - Авторизация для административных функций
+- Credentials хранятся в переменных окружения
+- Поддержка HTTPS для защищенных соединений
+
+## Миграция с версии 1.0
+
+Если у вас возникла ошибка **"Endpoint unavailable"** после смены сервера:
+
+1. Прочитайте **QUICK_FIX.md** для быстрого решения (5 минут)
+2. Следуйте **DEPLOYMENT_STEPS.md** для пошаговой инструкции
+3. Изучите **TROUBLESHOOTING.md** если проблема не решена
+
+## Документация
+
+- **README.md** (этот файл) - общая информация
+- **UNITY_INTEGRATION.md** - интеграция с Unity
+- **QUICK_FIX.md** - быстрое исправление ошибки endpoint
+- **TROUBLESHOOTING.md** - устранение неполадок
+- **CHANGELOG_PAYMENT_FIX.md** - журнал изменений
+- **DEPLOYMENT_STEPS.md** - пошаговое развертывание
