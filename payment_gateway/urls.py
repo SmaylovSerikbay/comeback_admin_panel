@@ -1,9 +1,18 @@
 from django.urls import path
+from django.shortcuts import redirect
 from . import views
 
 app_name = 'payment_gateway'
 
+
+def payment_gateway_redirect(request):
+    """Редирект с /payment-gateway/ на дашборд"""
+    return redirect('payment_gateway:dashboard')
+
+
 urlpatterns = [
+    # Редирект корня payment-gateway на дашборд
+    path('', payment_gateway_redirect),
     # Unity API endpoints
     path('api/unity/create-payment/', views.unity_create_payment, name='unity_create_payment'),
     path('api/unity/check-status/', views.unity_check_payment_status, name='unity_check_status'),
