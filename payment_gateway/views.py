@@ -112,16 +112,50 @@ def unity_create_payment(request):
     API endpoint для Unity - создание платежа
     """
     try:
-        data = json.loads(request.body)
+        # Парсинг JSON с обработкой ошибок
+        body = request.body
+        if not body:
+            log_message("❌ Unity create-payment: пустое тело запроса")
+            return JsonResponse({
+                'success': False,
+                'error': 'Empty request body. Send JSON with unity_user_id, amount, description'
+            }, status=400)
+        
+        try:
+            data = json.loads(body.decode('utf-8') if isinstance(body, bytes) else body)
+        except (json.JSONDecodeError, UnicodeDecodeError) as e:
+            log_message(f"❌ Unity create-payment: ошибка парсинга JSON: {e}")
+            return JsonResponse({
+                'success': False,
+                'error': f'Invalid JSON: {str(e)}'
+            }, status=400)
+        
         unity_user_id = data.get('unity_user_id')
         amount = data.get('amount')
         description = data.get('description', 'Unity Payment')
         
-        if not unity_user_id or not amount:
+        if not unity_user_id or amount is None:
             return JsonResponse({
                 'success': False,
                 'error': 'Missing unity_user_id or amount'
             }, status=400)
+        
+        # Приводим amount к int (Unity может отправить как число или строку)
+        try:
+            amount = int(amount)
+        except (TypeError, ValueError):
+            return JsonResponse({
+                'success': False,
+                'error': f'Invalid amount: must be a number, got {type(amount).__name__}'
+            }, status=400)
+        
+        if amount < 100:
+            return JsonResponse({
+                'success': False,
+                'error': 'Minimum amount is 100 UZS'
+            }, status=400)
+        
+        log_message(f"🎮 Unity create-payment: user_id={unity_user_id}, amount={amount}")
         
         # Создаем сессию платежа
         session_id = f"unity_{uuid.uuid4().hex[:16]}"
@@ -188,9 +222,11 @@ def unity_create_payment(request):
         
     except Exception as e:
         log_message(f"❌ Ошибка создания платежа Unity: {e}")
+        logger.exception("Unity create-payment exception")
         return JsonResponse({
             'success': False,
-            'error': str(e)
+            'error': str(e),
+            'error_type': type(e).__name__
         }, status=500)
 
 
