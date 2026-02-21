@@ -1,5 +1,35 @@
 # Получение SSL-сертификата вручную (Let's Encrypt)
 
+## Кратко (ручное получение)
+
+1. **DNS**: запись A для `admin.comeback.uz` → IP сервера (89.39.95.247), порт 80 открыт.
+2. **Сертификат** (на сервере, в каталоге проекта):
+   ```bash
+   cd ~/comeback_admin_panel
+   mkdir -p nginx/www
+   docker compose run --rm certbot certonly --webroot \
+     --webroot-path=/var/www/certbot \
+     --email admin@comeback.uz \
+     --agree-tos --no-eff-email \
+     -d admin.comeback.uz
+   ```
+   Файлы появятся в `./nginx/ssl/live/admin.comeback.uz/` (fullchain.pem, privkey.pem).
+3. **Включить HTTPS**: скопировать пример конфига и подключить его:
+   ```bash
+   cp nginx/conf.d/https.conf.example nginx/conf.d/https.conf
+   ```
+   В `nginx/nginx.conf` в конце блока `http { }` раскомментировать строку:
+   ```nginx
+   include /etc/nginx/conf.d/https.conf;
+   ```
+4. **Проверить и перезагрузить nginx**:
+   ```bash
+   docker compose exec nginx nginx -t && docker compose exec nginx nginx -s reload
+   ```
+5. В Django/settings и CORS при необходимости добавить `https://admin.comeback.uz`.
+
+---
+
 ## 1. Подготовка на сервере
 
 - Убедитесь, что **DNS** для `admin.comeback.uz` указывает на IP сервера (89.39.95.247).

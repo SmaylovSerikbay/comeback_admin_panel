@@ -441,7 +441,7 @@ def freedompay_success(request):
                     log_message(f"ℹ️ Транзакция {pg_order_id} уже имеет статус: {transaction.status}")
             except PaymentTransaction.DoesNotExist:
                 log_message(f"❌ Заказ {pg_order_id} не найден")
-    
+
     # Редирект в новую админку (шаблон удалён)
     return redirect('/?payment=success')
 
