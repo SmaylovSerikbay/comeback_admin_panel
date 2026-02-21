@@ -72,7 +72,7 @@ export default function MapPicker({
       <p className="text-sm font-medium text-slate-700">
         Кликните на карте, чтобы подставить широту и долготу
       </p>
-      <div className="overflow-hidden rounded-lg border border-slate-200" style={{ height: 320 }}>
+      <div className="h-[240px] overflow-hidden rounded-lg border border-slate-200 sm:h-[320px]">
         <MapContainer
           center={center}
           zoom={hasValidCoords ? 16 : 12}

@@ -2,11 +2,11 @@
 
 export default function ChromaKeyInstructions() {
   return (
-    <div className="rounded-lg border border-emerald-200 bg-emerald-50/80 p-4">
-      <h3 className="mb-2 text-sm font-semibold text-emerald-900">
+    <div className="rounded-lg border border-emerald-200 bg-emerald-50/80 p-3 sm:p-4">
+      <h3 className="mb-2 text-xs font-semibold text-emerald-900 sm:text-sm">
         Хромакей (зелёный экран) для AR
       </h3>
-      <ul className="space-y-1 text-sm text-emerald-800">
+      <ul className="space-y-1 text-xs text-emerald-800 sm:text-sm">
         <li>
           <strong>Цвет фона:</strong> используйте зелёный экран точно цвета{" "}
           <span

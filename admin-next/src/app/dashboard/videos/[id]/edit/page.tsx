@@ -94,13 +94,16 @@ export default function EditVideoPage() {
 
   return (
     <div>
-      <div className="mb-8 flex items-center gap-4">
-        <Link href="/dashboard/videos" className="text-slate-600 hover:text-slate-900">
+      <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:gap-4">
+        <Link
+          href="/dashboard/videos"
+          className="inline-flex min-h-[44px] w-fit items-center text-slate-600 hover:text-slate-900"
+        >
           ← Видео
         </Link>
-        <h1 className="text-2xl font-bold text-slate-800">Редактировать видео</h1>
+        <h1 className="text-xl font-bold text-slate-800 sm:text-2xl">Редактировать видео</h1>
       </div>
-      <div className="card max-w-xl">
+      <div className="card w-full max-w-xl p-4 sm:p-6">
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && (
             <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
@@ -116,12 +119,13 @@ export default function EditVideoPage() {
               required
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label htmlFor="lat" className="label">Широта</label>
               <input
                 id="lat"
                 type="text"
+                inputMode="decimal"
                 value={latitude}
                 onChange={(e) => setLatitude(e.target.value)}
                 className="input"
@@ -134,6 +138,7 @@ export default function EditVideoPage() {
               <input
                 id="lng"
                 type="text"
+                inputMode="decimal"
                 value={longitude}
                 onChange={(e) => setLongitude(e.target.value)}
                 className="input"
@@ -156,14 +161,14 @@ export default function EditVideoPage() {
               type="file"
               accept="video/mp4"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="input"
+              className="input min-h-[44px] py-2"
             />
           </div>
-          <div className="flex gap-3">
-            <button type="submit" disabled={loading} className="btn-primary">
+          <div className="flex flex-col gap-3 sm:flex-row sm:gap-3">
+            <button type="submit" disabled={loading} className="btn-primary min-h-[44px] flex-1 sm:flex-none">
               {loading ? "Сохранение…" : "Сохранить"}
             </button>
-            <Link href="/dashboard/videos" className="btn-secondary">
+            <Link href="/dashboard/videos" className="btn-secondary inline-flex min-h-[44px] flex-1 items-center justify-center text-center sm:flex-none">
               Отмена
             </Link>
           </div>
