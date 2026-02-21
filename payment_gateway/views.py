@@ -442,7 +442,8 @@ def freedompay_success(request):
             except PaymentTransaction.DoesNotExist:
                 log_message(f"❌ Заказ {pg_order_id} не найден")
     
-    return render(request, 'payment_gateway/success.html')
+    # Редирект в новую админку (шаблон удалён)
+    return redirect('/?payment=success')
 
 
 @csrf_exempt
@@ -503,7 +504,7 @@ def freedompay_fail(request):
             except PaymentTransaction.DoesNotExist:
                 log_message(f"❌ Заказ {pg_order_id} не найден")
     
-    return render(request, 'payment_gateway/fail.html')
+    return redirect('/?payment=fail')
 
 
 @login_required
