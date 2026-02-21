@@ -64,11 +64,15 @@ README.md
 *.md
 docs/
 
-# Scripts
+# Scripts (entrypoint.sh копируем отдельно в Dockerfile)
 *.bat
-*.sh
 setup.bat
 run_server.bat
+deploy.sh
+quick_deploy.sh
+install_docker_ubuntu16.sh
+install_docker_alternative.sh
+monitor.sh
 
 # Firebase
 firebase-credentials.json

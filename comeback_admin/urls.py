@@ -14,6 +14,7 @@ def redirect_to_dashboard(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('admin_api.urls')),
     path('', redirect_to_dashboard, name='home'),
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),

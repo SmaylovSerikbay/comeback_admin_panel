@@ -44,6 +44,18 @@ class SubscriptionSettings(models.Model):
         help_text='Включить/выключить систему подписки'
     )
     
+    # Способы оплаты для Unity: что показывать в приложении
+    online_payment_enabled = models.BooleanField(
+        default=True,
+        verbose_name='Интернет-оплата (эквайринг)',
+        help_text='Разрешить оплату картой / интернет-эквайринг в приложении'
+    )
+    otp_enabled = models.BooleanField(
+        default=True,
+        verbose_name='OTP (наличные коды)',
+        help_text='Разрешить оплату по OTP-кодам (наличные) в приложении'
+    )
+    
     # Metadata
     updated_at = models.DateTimeField(
         auto_now=True,
@@ -69,6 +81,8 @@ class SubscriptionSettings(models.Model):
             existing.duration_minutes = self.duration_minutes
             existing.currency = self.currency
             existing.is_active = self.is_active
+            existing.online_payment_enabled = getattr(self, 'online_payment_enabled', True)
+            existing.otp_enabled = getattr(self, 'otp_enabled', True)
             existing.updated_by = self.updated_by
             existing.save()
             return existing
@@ -83,7 +97,9 @@ class SubscriptionSettings(models.Model):
                 'price': 5000.00,
                 'duration_minutes': 30,
                 'currency': 'UZS',
-                'is_active': True
+                'is_active': True,
+                'online_payment_enabled': True,
+                'otp_enabled': True,
             }
         )
         return settings
@@ -95,6 +111,8 @@ class SubscriptionSettings(models.Model):
             'duration_minutes': self.duration_minutes,
             'currency': self.currency,
             'is_active': self.is_active,
+            'online_payment_enabled': getattr(self, 'online_payment_enabled', True),
+            'otp_enabled': getattr(self, 'otp_enabled', True),
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
     
