@@ -9,9 +9,12 @@ RUN npm install
 
 COPY . .
 
-# При сборке в Docker API бэкенда доступен по имени сервиса web
+# При сборке в Docker API бэкенда доступен по имени сервиса web (SSR)
 ARG API_UPSTREAM=http://web:8000
 ENV API_UPSTREAM=$API_UPSTREAM
+# Публичный URL API для браузера (вшивается в бандл при build)
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 RUN npm run build
 

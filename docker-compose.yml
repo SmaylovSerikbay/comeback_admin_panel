@@ -41,8 +41,12 @@ services:
       dockerfile: Dockerfile
       args:
         - API_UPSTREAM=http://web:8000
+        # Публичный URL API для браузера (вшивается при build; без SSL — http://)
+        - NEXT_PUBLIC_API_URL=https://admin.comeback.uz/api
     container_name: comeback_admin_panel-admin-next
     restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_URL=https://admin.comeback.uz/api
     ports:
       - "3000:3000"
     depends_on:
