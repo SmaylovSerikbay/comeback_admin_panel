@@ -48,21 +48,21 @@ export default function VideosPage() {
 
   return (
     <div>
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-800">Видео</h1>
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold text-slate-800 sm:text-2xl">Видео</h1>
         {isAdmin && (
-          <Link href="/dashboard/videos/new" className="btn-primary">
+          <Link href="/dashboard/videos/new" className="btn-primary w-full shrink-0 sm:w-auto">
             + Добавить видео
           </Link>
         )}
       </div>
-      <p className="mb-6 text-slate-600">Всего: {total}</p>
-      <div className="card">
+      <p className="mb-4 text-slate-600 sm:mb-6">Всего: {total}</p>
+      <div className="card overflow-hidden p-4 sm:p-6">
         {videos.length === 0 ? (
           <p className="text-slate-500">Нет видео</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="table-responsive">
+            <table className="w-full min-w-[500px] text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-left text-slate-600">
                   <th className="pb-2 pr-4">Название</th>

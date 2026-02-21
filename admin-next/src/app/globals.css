@@ -32,4 +32,18 @@ body {
   .label {
     @apply mb-1 block text-sm font-medium text-slate-700;
   }
+  /* Мобильная адаптивность: таблицы и карточки */
+  .table-responsive {
+    @apply -mx-4 overflow-x-auto sm:mx-0;
+  }
+  .table-responsive table {
+    @apply min-w-[600px] text-sm;
+  }
+}
+
+/* Удобные зоны нажатия на тач-устройствах */
+@media (pointer: coarse) {
+  .btn, .input, [role="button"] {
+    min-height: 44px;
+  }
 }

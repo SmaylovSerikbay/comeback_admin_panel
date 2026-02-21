@@ -48,8 +48,8 @@ export default function PaymentsPage() {
 
   return (
     <div>
-      <h1 className="mb-8 text-2xl font-bold text-slate-800">Платежи</h1>
-      <div className="mb-6 flex flex-wrap gap-4">
+      <h1 className="mb-6 text-xl font-bold text-slate-800 sm:mb-8 sm:text-2xl">Платежи</h1>
+      <div className="mb-4 flex flex-wrap gap-3 sm:mb-6 sm:gap-4">
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
@@ -80,13 +80,13 @@ export default function PaymentsPage() {
           <option value="cash">Наличные (OTP)</option>
         </select>
       </div>
-      <div className="card">
-        <p className="mb-4 text-slate-600">Всего: {total}</p>
+      <div className="card overflow-hidden p-4 sm:p-6">
+        <p className="mb-4 text-sm text-slate-600 sm:text-base">Всего: {total}</p>
         {payments.length === 0 ? (
           <p className="text-slate-500">Нет платежей</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="table-responsive">
+            <table className="w-full min-w-[600px] text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-left text-slate-600">
                   <th className="pb-2 pr-4">Заказ / OTP</th>

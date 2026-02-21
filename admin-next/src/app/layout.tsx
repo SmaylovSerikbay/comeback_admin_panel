@@ -4,6 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "ComeBack Admin",
   description: "Панель управления AR приложением ComeBack",
+  viewport: { width: "device-width", initialScale: 1, maximumScale: 5 },
 };
 
 export default function RootLayout({
@@ -13,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen antialiased">{children}</body>
     </html>
   );
 }

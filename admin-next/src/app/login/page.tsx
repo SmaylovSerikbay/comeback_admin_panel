@@ -31,11 +31,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 p-3 sm:p-4">
       <div className="w-full max-w-md">
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-800/80 p-8 shadow-2xl backdrop-blur">
-          <div className="mb-8 text-center">
-            <h1 className="text-2xl font-bold text-white">ComeBack Admin</h1>
+        <div className="rounded-2xl border border-slate-700/50 bg-slate-800/80 p-6 shadow-2xl backdrop-blur sm:p-8">
+          <div className="mb-6 text-center sm:mb-8">
+            <h1 className="text-xl font-bold text-white sm:text-2xl">ComeBack Admin</h1>
             <p className="mt-1 text-slate-400">Войдите в панель управления</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-5">
