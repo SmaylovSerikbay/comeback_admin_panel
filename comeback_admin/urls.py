@@ -1,28 +1,18 @@
 """
 URL configuration for comeback_admin project.
+Верстка — только admin-next (Next.js). Django отдаёт API и админку.
 """
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth import views as auth_views
 from django.shortcuts import redirect
-
-def redirect_to_dashboard(request):
-    """Redirect root URL to dashboard"""
-    return redirect('dashboard:home')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('admin_api.urls')),
-    path('', redirect_to_dashboard, name='home'),
-    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('dashboard/', include('sales_dashboard.urls', namespace='dashboard')),
-    path('videos/', include('video_manager.urls', namespace='videos')),
-    path('subscription/', include('subscription.urls', namespace='subscription')),
-    path('otp/', include('otp_manager.urls', namespace='otp_manager')),
     path('payment-gateway/', include('payment_gateway.urls', namespace='payment_gateway')),
+    path('', lambda r: redirect('/admin/'), name='home'),
 ]
 
 # Serve media files in development

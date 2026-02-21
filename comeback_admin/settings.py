@@ -73,7 +73,7 @@ ROOT_URLCONF = 'comeback_admin.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [],  # верстка в admin-next (Next.js)
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
