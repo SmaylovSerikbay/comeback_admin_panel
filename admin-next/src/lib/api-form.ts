@@ -1,11 +1,9 @@
 function getApiBaseForForm(): string {
   if (typeof window === "undefined") {
-    return process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+    return process.env.NEXT_PUBLIC_API_URL || (process.env.API_UPSTREAM || "http://web:8000") + "/api";
   }
   if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
-  const host = window.location.hostname;
-  const protocol = window.location.protocol;
-  return `${protocol}//${host}:8000/api`;
+  return "/api";
 }
 
 export function getAuthTokenForForm(): string | null {

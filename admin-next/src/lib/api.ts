@@ -1,21 +1,24 @@
-// В браузере: прямой вызов Django на порт 8000 (тот же хост), обходим прокси Next.js
+// В браузере: тот же хост (nginx проксирует /api/ на Django). Порт 8000 недоступен снаружи.
 function getApiBase(): string {
   if (typeof window === "undefined") {
-    return process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+    return process.env.NEXT_PUBLIC_API_URL || (process.env.API_UPSTREAM || "http://web:8000") + "/api";
   }
   if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
-  const host = window.location.hostname;
-  const protocol = window.location.protocol;
-  return `${protocol}//${host}:8000/api`;
+  // Относительный /api — запрос идёт на тот же origin, nginx отдаёт в web:8000
+  return "/api";
 }
 const API_BASE = getApiBase();
 
 /** Базовый URL бэкенда Django (без /api) — для редиректа на payment-gateway и т.п. */
 export function getBackendOrigin(): string {
-  const base = typeof window === "undefined"
-    ? (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api")
-    : (process.env.NEXT_PUBLIC_API_URL || `${window.location.protocol}//${window.location.hostname}:8000/api`);
-  return base.replace(/\/api\/?$/, "") || base;
+  if (typeof window === "undefined") {
+    const base = process.env.NEXT_PUBLIC_API_URL || (process.env.API_UPSTREAM || "http://web:8000") + "/api";
+    return base.replace(/\/api\/?$/, "") || base;
+  }
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, "");
+  }
+  return `${window.location.protocol}//${window.location.host}`;
 }
 
 let token: string | null = null;
