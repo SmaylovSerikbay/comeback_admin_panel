@@ -21,7 +21,7 @@ services:
       - CSRF_FAILURE_VIEW=django.views.csrf.csrf_failure
       - CSRF_COOKIE_NAME=csrftoken
       - CSRF_HEADER_NAME=HTTP_X_CSRFTOKEN
-      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://admin-next:3000
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://admin-next:3000,http://admin.comeback.uz,http://89.39.95.247
     volumes:
       - .:/app
       - static_files:/var/www/static
@@ -88,6 +88,7 @@ services:
       - media_files:/var/www/media
     depends_on:
       - web
+      - admin-next
     networks:
       - comeback_network
 
