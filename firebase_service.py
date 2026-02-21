@@ -321,6 +321,8 @@ class FirebaseService:
                 'duration_minutes': int(settings_data.get('duration_minutes', 30)),
                 'currency': str(settings_data.get('currency', 'UZS')),
                 'is_active': bool(settings_data.get('is_active', True)),
+                'online_payment_enabled': bool(settings_data.get('online_payment_enabled', True)),
+                'otp_enabled': bool(settings_data.get('otp_enabled', True)),
                 'updated_at': settings_data.get('updated_at')
             }
             

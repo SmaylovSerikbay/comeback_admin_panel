@@ -19,6 +19,10 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Копируем entrypoint в корень образа (не в /app), чтобы том .:/app его не перезаписывал
+COPY entrypoint.sh /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
+
 # Копируем код приложения
 COPY . .
 
@@ -33,5 +37,4 @@ RUN python manage.py collectstatic --noinput
 # Открываем порт
 EXPOSE 8000
 
-# Запускаем приложение
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "comeback_admin.wsgi:application"]
+ENTRYPOINT ["/entrypoint.sh"]
