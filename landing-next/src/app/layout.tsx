@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ComeBack — AR-платформа для бизнеса",
+  title: "ComeBack — древние города Узбекистана в AR",
   description:
-    "ComeBack — платформа дополненной реальности для маркетинга, продаж и вовлечения клиентов.",
+    "ComeBack — мобильное приложение дополненной реальности, которое показывает, какими были Бухара, Самарканд, Хива и другие города Узбекистана в прошлом.",
   viewport: { width: "device-width", initialScale: 1, maximumScale: 5 },
 };
 

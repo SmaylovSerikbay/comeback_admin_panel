@@ -48,13 +48,6 @@ export default function LandingPage() {
               BUKHARA / SAMARKAND / KHIVA
             </span>
           </div>
-
-          <a
-            href="#download"
-            className="btn-outline text-xs md:text-sm"
-          >
-            Скачать приложение
-          </a>
         </div>
       </header>
 
@@ -83,14 +76,14 @@ export default function LandingPage() {
                 Скачать приложение
               </a>
               <a
-                href="mailto:admin@comeback.uz?subject=ComeBack%20Collaboration"
+                href="#download"
                 className="btn-outline text-sm"
               >
-                Сотрудничество и партнёрство
+                Смотреть на карте
               </a>
               <span className="text-xs text-slate-400">
-                Для пользователей, любящих историю, путешествия и города
-                Узбекистана.
+                Для тех, кто любит историю, путешествия и хочет увидеть города
+                Узбекистана по‑новому.
               </span>
             </div>
           </div>
@@ -171,7 +164,10 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
-            <h2 id="download" className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
+            <h2
+              id="download"
+              className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400"
+            >
               КАК НАЧАТЬ
             </h2>
             <ol className="space-y-3 text-sm text-slate-200">
@@ -184,7 +180,41 @@ export default function LandingPage() {
                 </li>
               ))}
             </ol>
-            <p className="pt-1 text-xs text-slate-400">
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <a
+                href="https://apps.apple.com/app/id0000000000"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-900/80 px-4 py-2 text-left text-xs text-slate-100 hover:border-emerald-500 hover:bg-slate-900 transition-colors"
+              >
+                <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-slate-800">
+                  <span className="text-[10px] font-semibold"></span>
+                </div>
+                <div className="leading-tight">
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-slate-400">
+                    Скачать в
+                  </div>
+                  <div className="text-sm font-semibold">App Store</div>
+                </div>
+              </a>
+              <a
+                href="https://play.google.com/store/apps/details?id=com.comeback.app"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-900/80 px-4 py-2 text-left text-xs text-slate-100 hover:border-emerald-500 hover:bg-slate-900 transition-colors"
+              >
+                <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-slate-800">
+                  <span className="text-[10px] font-semibold">▶</span>
+                </div>
+                <div className="leading-tight">
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-slate-400">
+                    Доступно в
+                  </div>
+                  <div className="text-sm font-semibold">Google Play</div>
+                </div>
+              </a>
+            </div>
+            <p className="pt-3 text-xs text-slate-400">
               Приложение развивается — мы добавляем новые города, маршруты и
               исторические сценарии, чтобы вы могли по‑новому увидеть знакомые
               места.
@@ -204,15 +234,19 @@ export default function LandingPage() {
               Связаться с нами
             </a>
             <span className="hidden h-1 w-1 rounded-full bg-slate-700 sm:inline-block" />
-            <span className="text-slate-500">
-              Админ‑панель:{" "}
-              <a
-                href="https://admin.comeback.uz"
-                className="text-slate-300 underline-offset-2 hover:text-emerald-300 hover:underline"
-              >
-                admin.comeback.uz
-              </a>
-            </span>
+            <a
+              href="/offer"
+              className="text-slate-400 underline-offset-2 hover:text-emerald-300 hover:underline"
+            >
+              Публичная оферта
+            </a>
+            <span className="hidden h-1 w-1 rounded-full bg-slate-700 sm:inline-block" />
+            <a
+              href="/privacy"
+              className="text-slate-400 underline-offset-2 hover:text-emerald-300 hover:underline"
+            >
+              Политика конфиденциальности
+            </a>
           </div>
         </div>
       </footer>
