@@ -54,6 +54,27 @@ services:
     networks:
       - comeback_network
 
+  # Next.js лендинг для comeback.uz
+  landing-next:
+    build:
+      context: ./landing-next
+      dockerfile: Dockerfile
+      args:
+        - API_UPSTREAM=http://web:8000
+        - NEXT_PUBLIC_API_URL=https://comeback.uz/api
+    container_name: comeback_admin_panel-landing-next
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_URL=https://comeback.uz/api
+    # В продакшене nginx ходит к контейнеру по внутренней сети;
+    # публикация порта полезна для локальной отладки.
+    ports:
+      - "3100:3100"
+    depends_on:
+      - web
+    networks:
+      - comeback_network
+
   # PostgreSQL база данных
   db:
     image: postgres:15-alpine

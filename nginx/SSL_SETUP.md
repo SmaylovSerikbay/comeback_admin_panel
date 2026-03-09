@@ -1,8 +1,11 @@
-# Получение SSL-сертификата вручную (Let's Encrypt)
+# Получение SSL-сертификата вручную (Let's Encrypt) для admin.comeback.uz и comeback.uz
 
 ## Кратко (ручное получение)
 
-1. **DNS**: запись A для `admin.comeback.uz` → IP сервера (89.39.95.247), порт 80 открыт.
+1. **DNS**:
+   - запись A для `admin.comeback.uz` → IP сервера (89.39.95.247)
+   - запись A для `comeback.uz` и `www.comeback.uz` → тот же IP сервера (89.39.95.247)
+   - порт 80 открыт.
 2. **Сертификат** (на сервере, в каталоге проекта):
    ```bash
    cd ~/comeback_admin_panel
@@ -11,9 +14,9 @@
      --webroot-path=/var/www/certbot \
      --email admin@comeback.uz \
      --agree-tos --no-eff-email \
-     -d admin.comeback.uz
+     -d admin.comeback.uz -d comeback.uz -d www.comeback.uz
    ```
-   Файлы появятся в `./nginx/ssl/live/admin.comeback.uz/` (fullchain.pem, privkey.pem).
+   Файлы появятся в `./nginx/ssl/live/admin.comeback.uz/` и `./nginx/ssl/live/comeback.uz/` (fullchain.pem, privkey.pem).
 3. **Включить HTTPS**: скопировать пример конфига и подключить его:
    ```bash
    cp nginx/conf.d/https.conf.example nginx/conf.d/https.conf
