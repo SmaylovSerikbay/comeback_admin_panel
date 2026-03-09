@@ -2,26 +2,26 @@
 
 const features = [
   {
-    title: "Глубокая интеграция с Unity",
+    title: "Бухара времён караванов",
     description:
-      "Стабильный backend и удобная админка для управления контентом AR-проектов без обновления приложения.",
+      "Прогуляйтесь по узким улицам древней Бухары, увидьте медресе, базары и кварталы так, как они выглядели сотни лет назад.",
   },
   {
-    title: "Мощная аналитика",
+    title: "Самарканд эпохи Великого Шёлкового пути",
     description:
-      "Отслеживайте установки, оплаты, конверсии и сценарии использования в одном дашборде.",
+      "Исследуйте площади и мавзолеи Самарканда, почувствуйте масштаб городов, через которые проходили торговцы и путешественники.",
   },
   {
-    title: "Надёжная инфраструктура",
+    title: "Живая история Хивы и других городов",
     description:
-      "Django + PostgreSQL + Redis + Docker + SSL — продакшен-стек, готовый к высоким нагрузкам.",
+      "Перемещайтесь во времени, сравнивайте, как выглядели легендарные города Центральной Азии тогда и сейчас.",
   },
 ];
 
 const steps = [
-  "Оставьте заявку и опишите ваш кейс.",
-  "Мы предложим архитектуру и запустим пилот.",
-  "Подключим оплату, аналитику и поддержим релиз.",
+  "Скачайте приложение ComeBack из магазина приложений.",
+  "Выберите город — Бухара, Самарканд, Хива и другие локации.",
+  "Наведите камеру и увидьте, какими были эти места в древности.",
 ];
 
 export default function LandingPage() {
@@ -36,26 +36,24 @@ export default function LandingPage() {
               </span>
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold tracking-tight">
-                ComeBack
-              </span>
+              <span className="text-sm font-semibold tracking-tight">ComeBack</span>
               <span className="text-xs text-slate-400">
-                AR-платформа для бизнеса
+                Путешествие по древним городам в AR
               </span>
             </div>
           </div>
 
           <div className="hidden items-center gap-4 text-sm text-slate-300 md:flex">
             <span className="cursor-default text-xs uppercase tracking-[0.18em] text-emerald-400/80">
-              AR / SUBSCRIPTION / ANALYTICS
+              BUKHARA / SAMARKAND / KHIVA
             </span>
           </div>
 
           <a
-            href="https://admin.comeback.uz"
+            href="#download"
             className="btn-outline text-xs md:text-sm"
           >
-            Вход в админку
+            Скачать приложение
           </a>
         </div>
       </header>
@@ -69,30 +67,30 @@ export default function LandingPage() {
               COMEBACK.UZ
             </p>
             <h1 className="text-balance text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl md:text-5xl">
-              Платформа дополненной реальности,
-              <span className="text-emerald-400"> которая умеет продавать</span>
+              Увидьте Бухару, Самарканд и Хиву
+              <span className="text-emerald-400"> такими, какими они были раньше</span>
             </h1>
             <p className="max-w-xl text-pretty text-sm text-slate-300 sm:text-base">
-              Управляйте контентом, подписками и оплатами вашего AR-приложения
-              через удобную веб‑панель. Без ручных обновлений, с готовой
-              интеграцией под Unity и прозрачной аналитикой.
+              ComeBack — это AR‑приложение, которое переносит вас в прошлое
+              легендарных городов Узбекистана. Смотрите, как выглядели площади,
+              улицы и здания много лет назад, прямо на экране вашего телефона.
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <a
-                href="mailto:admin@comeback.uz?subject=ComeBack%20Landing%20Request"
+                href="#download"
                 className="btn-primary"
               >
-                Оставить заявку
+                Скачать приложение
               </a>
               <a
-                href="https://admin.comeback.uz"
+                href="mailto:admin@comeback.uz?subject=ComeBack%20Collaboration"
                 className="btn-outline text-sm"
               >
-                Смотреть админ‑панель
+                Сотрудничество и партнёрство
               </a>
               <span className="text-xs text-slate-400">
-                Подходит для подписочных AR‑сервисов, игр и интерактивного
-                маркетинга.
+                Для пользователей, любящих историю, путешествия и города
+                Узбекистана.
               </span>
             </div>
           </div>
@@ -112,36 +110,36 @@ export default function LandingPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-3">
                     <p className="text-[11px] text-slate-400">
-                      Активные подписки
+                      Города и эпохи
                     </p>
                     <p className="mt-1 text-2xl font-semibold text-emerald-400">
-                      12 480
+                      Бухара, Самарканд, Хива
                     </p>
                     <p className="mt-1 text-[11px] text-emerald-300">
-                      +8.4% за 30 дней
+                      и другие исторические локации
                     </p>
                   </div>
                   <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-3">
                     <p className="text-[11px] text-slate-400">
-                      Месячный оборот
+                      Режим сравнения
                     </p>
                     <p className="mt-1 text-2xl font-semibold text-slate-50">
-                      74 200 $
+                      Тогда и сейчас
                     </p>
                     <p className="mt-1 text-[11px] text-emerald-300">
-                      конверсия в оплату 6.3%
+                      увидьте, как менялись города
                     </p>
                   </div>
                 </div>
                 <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-3">
                   <p className="text-[11px] text-slate-400 mb-2">
-                    Пайплайн Unity → Backend → Клиент
+                    Как работает приложение
                   </p>
                   <ol className="space-y-1 text-[11px] text-slate-300">
-                    <li>• Unity отправляет события и покупки на backend.</li>
-                    <li>• Django обрабатывает оплату и подписку.</li>
-                    <li>• Firebase синхронизирует данные с приложением.</li>
-                    <li>• Дашборд показывает, что происходит прямо сейчас.</li>
+                    <li>• Вы выбираете город и эпоху в приложении.</li>
+                    <li>• Наводите камеру на пространство вокруг.</li>
+                    <li>• На экране появляется реконструкция города в прошлом.</li>
+                    <li>• Смотрите детали, маршруты и описания ключевых мест.</li>
                   </ol>
                 </div>
               </div>
@@ -154,7 +152,7 @@ export default function LandingPage() {
         <div className="container-page grid gap-10 py-12 md:grid-cols-[3fr,2fr] md:py-16">
           <div className="space-y-5">
             <h2 className="text-xl font-semibold tracking-tight text-slate-50 md:text-2xl">
-              Что даёт ComeBack вашей команде
+              Что вы получите с ComeBack
             </h2>
             <div className="grid gap-4 md:grid-cols-3">
               {features.map((feature) => (
@@ -173,7 +171,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
+            <h2 id="download" className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
               КАК НАЧАТЬ
             </h2>
             <ol className="space-y-3 text-sm text-slate-200">
@@ -187,8 +185,9 @@ export default function LandingPage() {
               ))}
             </ol>
             <p className="pt-1 text-xs text-slate-400">
-              Технологический стек, деплой, SSL и интеграции уже настроены на
-              стороне admin.comeback.uz — остаётся адаптировать под ваш кейс.
+              Приложение развивается — мы добавляем новые города, маршруты и
+              исторические сценарии, чтобы вы могли по‑новому увидеть знакомые
+              места.
             </p>
           </div>
         </div>
