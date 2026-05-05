@@ -27,7 +27,8 @@ RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-RUN mkdir -p ./public
+# Статика (картинки лендинга) — standalone не всегда кладёт public в образ полностью
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 USER nextjs
 

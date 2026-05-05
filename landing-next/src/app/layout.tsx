@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   description:
     "ComeBack — мобильное приложение дополненной реальности, которое показывает, какими были Бухара, Самарканд, Хива и другие города Узбекистана в прошлом.",
   viewport: { width: "device-width", initialScale: 1, maximumScale: 5 },
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
