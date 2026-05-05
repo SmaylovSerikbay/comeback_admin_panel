@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --page-max-width: 1120px;
+  --page-max-width: 1200px;
 }
 
 body {
-  @apply bg-slate-950 text-slate-50 antialiased;
+  @apply bg-[#030712] text-slate-50 antialiased;
 }
 
 main {
@@ -15,20 +15,53 @@ main {
 }
 
 .container-page {
-  @apply w-full max-w-[var(--page-max-width)] mx-auto px-4;
+  @apply w-full max-w-[var(--page-max-width)] mx-auto px-4 sm:px-6;
+}
+
+/* Фон страницы — сетка + мягкое свечение */
+.landing-bg {
+  background-color: #030712;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.22), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(52, 211, 153, 0.08), transparent),
+    radial-gradient(ellipse 50% 30% at 0% 20%, rgba(16, 185, 129, 0.06), transparent),
+    linear-gradient(rgba(15, 23, 42, 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.4) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    48px 48px,
+    48px 48px;
 }
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#030712] disabled:opacity-50;
   }
 
   .btn-primary {
-    @apply btn bg-emerald-500 text-slate-950 hover:bg-emerald-400 focus:ring-emerald-400;
+    @apply btn bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/25 hover:from-emerald-300 hover:to-teal-300 hover:shadow-emerald-400/30 focus:ring-emerald-400;
   }
 
   .btn-outline {
-    @apply btn border border-slate-700 text-slate-100 hover:bg-slate-900 focus:ring-slate-600;
+    @apply btn border border-slate-600/80 bg-slate-900/40 text-slate-100 backdrop-blur-sm hover:border-emerald-500/50 hover:bg-slate-800/60 focus:ring-slate-500;
+  }
+
+  .section-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400/90;
+  }
+
+  .glass-header {
+    @apply sticky top-0 z-50 border-b border-white/5 bg-[#030712]/75 backdrop-blur-xl;
+  }
+
+  .feature-card {
+    @apply group relative overflow-hidden rounded-2xl border border-slate-800/80 bg-gradient-to-b from-slate-900/90 to-slate-950/90 p-5 shadow-xl transition-all duration-300 hover:border-emerald-500/30 hover:shadow-emerald-500/10;
+  }
+
+  .stat-pill {
+    @apply rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-center backdrop-blur-sm;
   }
 }
 
