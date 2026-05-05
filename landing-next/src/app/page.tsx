@@ -1,22 +1,25 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 
-const HERO_IMAGE = "/images/landing/slideshow1_ru.png";
+/** Горизонтальные макеты (баннеры) — рядом с текстом, без кропа по высоте */
+const HERO_ASIDE_BANNER = "/images/landing/banner1.png";
 
-const banners = [
-  {
-    src: "/images/landing/banner1.png",
-    alt: "ComeBack — дополненная реальность в городах Узбекистана",
-  },
+/** Вертикальные постеры / слайды AR — только object-contain + достаточная ширина */
+const POSTER_MAIN = "/images/landing/slideshow1_ru.png";
+
+const detailTiles = [
   {
     src: "/images/landing/banner2.png",
-    alt: "Исторические локации в AR",
+    alt: "ComeBack — исторические города Узбекистана в AR",
   },
   {
     src: "/images/landing/banner3.png",
-    alt: "Путешествие во времени с ComeBack",
+    alt: "ComeBack — путешествие во времени",
+  },
+  {
+    src: "/images/landing/slideshow2.png",
+    alt: "Дополненная реальность в городах Узбекистана",
   },
 ] as const;
 
@@ -87,8 +90,8 @@ export default function LandingPage() {
       </header>
 
       <section className="border-b border-slate-800/70 bg-[radial-gradient(circle_at_top,_#22c55e11,_transparent_55%),radial-gradient(circle_at_bottom,_#22c55e22,_transparent_55%)]">
-        <div className="container-page flex flex-col gap-10 py-14 md:flex-row md:items-center md:py-20">
-          <div className="flex-1 space-y-6">
+        <div className="container-page grid gap-12 py-14 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-20">
+          <div className="order-2 space-y-6 lg:order-1">
             <p className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/5 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-emerald-300">
               LIVE PROJECT
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
@@ -123,22 +126,41 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="flex-1">
-            <div className="relative mx-auto w-full max-w-lg overflow-hidden rounded-3xl border border-emerald-500/40 bg-slate-900/60 shadow-[0_0_80px_rgba(16,185,129,0.2)]">
-              <div className="relative aspect-[4/5] w-full sm:aspect-[3/4]">
-                <Image
-                  src={HERO_IMAGE}
-                  alt="Дополненная реальность в городах Узбекистана — ComeBack"
-                  fill
-                  className="object-cover object-center"
-                  sizes="(max-width: 768px) 100vw, 480px"
-                  priority
-                />
-              </div>
-              <p className="border-t border-slate-800/80 bg-slate-950/90 px-4 py-3 text-center text-xs text-slate-400">
+          <div className="order-1 flex justify-center lg:order-2 lg:justify-end">
+            <figure className="w-full max-w-xl overflow-hidden rounded-2xl border border-emerald-500/35 bg-slate-900/80 shadow-[0_24px_80px_-12px_rgba(16,185,129,0.25)] ring-1 ring-white/5">
+              {/* Горизонтальный баннер: естественные пропорции, без object-cover */}
+              <img
+                src={HERO_ASIDE_BANNER}
+                alt="ComeBack — дополненная реальность в городах Узбекистана"
+                width={1200}
+                height={675}
+                className="h-auto w-full align-middle"
+                decoding="async"
+                fetchPriority="high"
+              />
+              <figcaption className="border-t border-slate-800/90 bg-slate-950/95 px-4 py-3 text-center text-xs text-slate-400">
                 AR в Бухаре, Самарканде, Хиве и других городах
-              </p>
-            </div>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      {/* Вертикальный постер: полная ширина, без обрезки текста сверху */}
+      <section className="border-b border-slate-800/70 bg-gradient-to-b from-slate-950 via-slate-900/95 to-slate-950 py-10 md:py-16">
+        <div className="container-page">
+          <p className="mb-6 text-center text-sm font-medium tracking-wide text-emerald-400/95">
+            Визуал приложения — постер и магазины приложений
+          </p>
+          <div className="mx-auto flex max-w-6xl justify-center rounded-2xl border border-slate-800/80 bg-slate-950/90 p-4 shadow-inner ring-1 ring-white/5 sm:p-6 md:p-8">
+            <img
+              src={POSTER_MAIN}
+              alt="Augmented Reality in the Cities of Uzbekistan — ComeBack"
+              width={1080}
+              height={1920}
+              className="h-auto max-h-[min(88vh,960px)] w-full max-w-3xl object-contain object-top"
+              decoding="async"
+            />
           </div>
         </div>
       </section>
@@ -148,22 +170,24 @@ export default function LandingPage() {
           <h2 className="text-center text-lg font-semibold text-slate-50 md:text-xl">
             ComeBack в деталях
           </h2>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {banners.map((b) => (
-              <div
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {detailTiles.map((b) => (
+              <figure
                 key={b.src}
-                className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 shadow-lg"
+                className="flex flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 shadow-lg ring-1 ring-white/5"
               >
-                <div className="relative aspect-[4/3] w-full">
-                  <Image
+                <div className="flex min-h-[12rem] flex-1 items-center justify-center bg-slate-950/60 p-3 sm:min-h-[14rem] sm:p-4">
+                  <img
                     src={b.src}
                     alt={b.alt}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, 33vw"
+                    width={800}
+                    height={450}
+                    className="max-h-56 w-full object-contain sm:max-h-64"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
-              </div>
+              </figure>
             ))}
           </div>
         </div>
@@ -171,20 +195,26 @@ export default function LandingPage() {
 
       <section className="border-b border-slate-800/70 bg-slate-900/30 py-10 md:py-14">
         <div className="container-page">
-          <h2 className="mb-6 text-center text-lg font-semibold text-slate-50 md:text-xl">
-            Дополненная реальность в городах Узбекистана
+          <h2 className="mb-2 text-center text-lg font-semibold text-slate-50 md:text-xl">
+            Галерея сцен AR
           </h2>
-          <div className="relative mx-auto max-w-4xl overflow-hidden rounded-2xl border border-slate-800 bg-slate-950">
-            <div className="relative aspect-[16/10] w-full">
-              <Image
+          <p className="mx-auto mb-8 max-w-2xl text-center text-sm text-slate-400">
+            Слайды разного формата показываются целиком (без обрезки). Листайте,
+            чтобы увидеть локации в Узбекистане.
+          </p>
+          <div className="relative mx-auto max-w-5xl overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-xl ring-1 ring-white/5">
+            <div className="flex min-h-[min(70vh,640px)] items-center justify-center bg-[radial-gradient(ellipse_at_center,_#0f172a_0%,_#020617_70%)] px-3 py-8 sm:min-h-[min(75vh,720px)] sm:px-6 sm:py-10">
+              <img
+                key={gallerySlides[slideIndex]}
                 src={gallerySlides[slideIndex]}
                 alt={`Слайд ${slideIndex + 1} — ComeBack AR`}
-                fill
-                className="object-contain bg-slate-950"
-                sizes="(max-width: 896px) 100vw, 896px"
+                width={1200}
+                height={1200}
+                className="max-h-[min(68vh,700px)] w-full object-contain"
+                decoding="async"
               />
             </div>
-            <div className="flex items-center justify-between gap-2 border-t border-slate-800 bg-slate-900/80 px-3 py-3 sm:px-4">
+            <div className="flex items-center justify-between gap-2 border-t border-slate-800 bg-slate-900/90 px-3 py-3 sm:px-4">
               <button
                 type="button"
                 onClick={prevSlide}
