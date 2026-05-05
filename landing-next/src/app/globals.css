@@ -57,7 +57,7 @@ main {
   }
 
   .feature-card {
-    @apply group relative overflow-hidden rounded-2xl border border-slate-800/80 bg-gradient-to-b from-slate-900/90 to-slate-950/90 p-5 shadow-xl transition-all duration-300 hover:border-emerald-500/30 hover:shadow-emerald-500/10;
+    @apply relative overflow-hidden rounded-2xl border border-slate-800/80 bg-gradient-to-b from-slate-900/90 to-slate-950/90 p-5 shadow-xl transition-all duration-300 hover:border-emerald-500/30 hover:shadow-emerald-500/10;
   }
 
   .stat-pill {
