@@ -1,5 +1,34 @@
 "use client";
 
+import Image from "next/image";
+import { useState } from "react";
+
+const HERO_IMAGE = "/images/landing/slideshow1_ru.png";
+
+const banners = [
+  {
+    src: "/images/landing/banner1.png",
+    alt: "ComeBack — дополненная реальность в городах Узбекистана",
+  },
+  {
+    src: "/images/landing/banner2.png",
+    alt: "Исторические локации в AR",
+  },
+  {
+    src: "/images/landing/banner3.png",
+    alt: "Путешествие во времени с ComeBack",
+  },
+] as const;
+
+const gallerySlides = [
+  "/images/landing/slideshow1_ru.png",
+  "/images/landing/slideshow2.png",
+  "/images/landing/ar-slide-2.png",
+  "/images/landing/ar-slide-3.png",
+  "/images/landing/ar-slide-4.png",
+  "/images/landing/ar-slide-5.png",
+] as const;
+
 const features = [
   {
     title: "Бухара времён караванов",
@@ -25,6 +54,12 @@ const steps = [
 ];
 
 export default function LandingPage() {
+  const [slideIndex, setSlideIndex] = useState(0);
+  const nextSlide = () =>
+    setSlideIndex((i) => (i + 1) % gallerySlides.length);
+  const prevSlide = () =>
+    setSlideIndex((i) => (i - 1 + gallerySlides.length) % gallerySlides.length);
+
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <header className="border-b border-slate-800/70">
@@ -89,53 +124,98 @@ export default function LandingPage() {
           </div>
 
           <div className="flex-1">
-            <div className="relative mx-auto max-w-md rounded-3xl border border-emerald-500/40 bg-gradient-to-br from-slate-900/80 via-slate-900/40 to-slate-950/80 p-5 shadow-[0_0_80px_rgba(16,185,129,0.25)] backdrop-blur">
-              <div className="mb-4 flex items-center justify-between text-xs text-slate-400">
-                <span className="inline-flex items-center gap-1">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                  Реальные метрики
-                </span>
-                <span className="rounded-full bg-slate-900/80 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-slate-400">
-                  DASHBOARD
-                </span>
+            <div className="relative mx-auto w-full max-w-lg overflow-hidden rounded-3xl border border-emerald-500/40 bg-slate-900/60 shadow-[0_0_80px_rgba(16,185,129,0.2)]">
+              <div className="relative aspect-[4/5] w-full sm:aspect-[3/4]">
+                <Image
+                  src={HERO_IMAGE}
+                  alt="Дополненная реальность в городах Узбекистана — ComeBack"
+                  fill
+                  className="object-cover object-center"
+                  sizes="(max-width: 768px) 100vw, 480px"
+                  priority
+                />
               </div>
-              <div className="space-y-4 text-xs text-slate-200">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-3">
-                    <p className="text-[11px] text-slate-400">
-                      Города и эпохи
-                    </p>
-                    <p className="mt-1 text-2xl font-semibold text-emerald-400">
-                      Бухара, Самарканд, Хива
-                    </p>
-                    <p className="mt-1 text-[11px] text-emerald-300">
-                      и другие исторические локации
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-3">
-                    <p className="text-[11px] text-slate-400">
-                      Режим сравнения
-                    </p>
-                    <p className="mt-1 text-2xl font-semibold text-slate-50">
-                      Тогда и сейчас
-                    </p>
-                    <p className="mt-1 text-[11px] text-emerald-300">
-                      увидьте, как менялись города
-                    </p>
-                  </div>
-                </div>
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-3">
-                  <p className="text-[11px] text-slate-400 mb-2">
-                    Как работает приложение
-                  </p>
-                  <ol className="space-y-1 text-[11px] text-slate-300">
-                    <li>• Вы выбираете город и эпоху в приложении.</li>
-                    <li>• Наводите камеру на пространство вокруг.</li>
-                    <li>• На экране появляется реконструкция города в прошлом.</li>
-                    <li>• Смотрите детали, маршруты и описания ключевых мест.</li>
-                  </ol>
+              <p className="border-t border-slate-800/80 bg-slate-950/90 px-4 py-3 text-center text-xs text-slate-400">
+                AR в Бухаре, Самарканде, Хиве и других городах
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-slate-800/70 bg-slate-950 py-10 md:py-14">
+        <div className="container-page space-y-6">
+          <h2 className="text-center text-lg font-semibold text-slate-50 md:text-xl">
+            ComeBack в деталях
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {banners.map((b) => (
+              <div
+                key={b.src}
+                className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/40 shadow-lg"
+              >
+                <div className="relative aspect-[4/3] w-full">
+                  <Image
+                    src={b.src}
+                    alt={b.alt}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, 33vw"
+                  />
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-slate-800/70 bg-slate-900/30 py-10 md:py-14">
+        <div className="container-page">
+          <h2 className="mb-6 text-center text-lg font-semibold text-slate-50 md:text-xl">
+            Дополненная реальность в городах Узбекистана
+          </h2>
+          <div className="relative mx-auto max-w-4xl overflow-hidden rounded-2xl border border-slate-800 bg-slate-950">
+            <div className="relative aspect-[16/10] w-full">
+              <Image
+                src={gallerySlides[slideIndex]}
+                alt={`Слайд ${slideIndex + 1} — ComeBack AR`}
+                fill
+                className="object-contain bg-slate-950"
+                sizes="(max-width: 896px) 100vw, 896px"
+              />
+            </div>
+            <div className="flex items-center justify-between gap-2 border-t border-slate-800 bg-slate-900/80 px-3 py-3 sm:px-4">
+              <button
+                type="button"
+                onClick={prevSlide}
+                className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200 hover:border-emerald-500/50 hover:text-emerald-300"
+                aria-label="Предыдущий слайд"
+              >
+                ←
+              </button>
+              <div className="flex flex-wrap justify-center gap-1.5">
+                {gallerySlides.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setSlideIndex(i)}
+                    className={`h-2 w-2 rounded-full transition-colors ${
+                      i === slideIndex
+                        ? "bg-emerald-400"
+                        : "bg-slate-600 hover:bg-slate-500"
+                    }`}
+                    aria-label={`Слайд ${i + 1}`}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={nextSlide}
+                className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200 hover:border-emerald-500/50 hover:text-emerald-300"
+                aria-label="Следующий слайд"
+              >
+                →
+              </button>
             </div>
           </div>
         </div>
@@ -228,7 +308,7 @@ export default function LandingPage() {
           <span>© {new Date().getFullYear()} ComeBack. Все права защищены.</span>
           <div className="flex flex-wrap items-center gap-3">
             <a
-              href="mailto:admin@comeback.uz"
+              href="mailto:hello@comeback.uz"
               className="text-slate-400 underline-offset-2 hover:text-emerald-300 hover:underline"
             >
               Связаться с нами
