@@ -4,27 +4,40 @@ import { useState } from "react";
 
 /** Каждый файл — ровно один раз на странице */
 const IMG = {
-  hero: "/images/landing/banner1.png",
+  wide0: "/images/landing/banner1.png",
   wideA: "/images/landing/banner2.png",
   wideB: "/images/landing/banner3.png",
 } as const;
+
+/** Главный херо: широкие промо-баннеры (EN / RU / O‘zbek) */
+const heroBanners = [
+  {
+    src: "/images/landing/ar-slide-3.png",
+    label: "English",
+    alt: "Augmented Reality in the Cities of Uzbekistan — ComeBack",
+  },
+  {
+    src: "/images/landing/ar-slide-4.png",
+    label: "Русский",
+    alt: "Дополненная реальность в городах Узбекистана — ComeBack",
+  },
+  {
+    src: "/images/landing/ar-slide-5.png",
+    label: "Oʻzbekcha",
+    alt: "O‘zbekiston shaharlarida qo‘shimcha reallik — ComeBack",
+  },
+] as const;
 
 const gallerySlides = [
   "/images/landing/slideshow1_ru.png",
   "/images/landing/slideshow2.png",
   "/images/landing/ar-slide-2.png",
-  "/images/landing/ar-slide-3.png",
-  "/images/landing/ar-slide-4.png",
-  "/images/landing/ar-slide-5.png",
 ] as const;
 
 const galleryLabels = [
   "Постер приложения",
   "Визуал AR",
-  "Сцена AR",
-  "Локация",
-  "Площадь",
-  "Маршрут",
+  "Сцена на площадке",
 ] as const;
 
 const features = [
@@ -57,11 +70,18 @@ const steps = [
 const cities = ["Бухара", "Самарканд", "Хива", "Ташкент", "Шахрисабз"];
 
 export default function LandingPage() {
-  const [slideIndex, setSlideIndex] = useState(0);
-  const nextSlide = () =>
-    setSlideIndex((i) => (i + 1) % gallerySlides.length);
-  const prevSlide = () =>
-    setSlideIndex((i) => (i - 1 + gallerySlides.length) % gallerySlides.length);
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+
+  const nextHero = () =>
+    setHeroIndex((i) => (i + 1) % heroBanners.length);
+  const prevHero = () =>
+    setHeroIndex((i) => (i - 1 + heroBanners.length) % heroBanners.length);
+
+  const nextGallery = () =>
+    setGalleryIndex((i) => (i + 1) % gallerySlides.length);
+  const prevGallery = () =>
+    setGalleryIndex((i) => (i - 1 + gallerySlides.length) % gallerySlides.length);
 
   return (
     <div className="landing-bg flex min-h-screen flex-col">
@@ -82,6 +102,9 @@ export default function LandingPage() {
           </a>
 
           <nav className="flex w-full flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px] font-medium text-slate-300 sm:w-auto sm:justify-end sm:gap-x-6 sm:text-sm md:gap-x-8">
+            <a href="#hero" className="transition hover:text-white">
+              Главная
+            </a>
             <a href="#cities" className="transition hover:text-white">
               Города
             </a>
@@ -101,14 +124,79 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b border-white/5 pb-12 pt-8 sm:pb-16 sm:pt-12 md:pt-14">
-        <div className="pointer-events-none absolute -right-32 top-16 h-72 w-72 rounded-full bg-emerald-500/12 blur-[100px] sm:h-96 sm:w-96" />
-        <div className="pointer-events-none absolute -left-32 bottom-0 h-64 w-64 rounded-full bg-teal-500/10 blur-[90px]" />
+      {/* Hero: главные широкие баннеры (не галерея) */}
+      <section
+        id="hero"
+        className="relative overflow-hidden border-b border-white/5 pb-10 pt-6 sm:pb-14 sm:pt-8 md:pt-10"
+      >
+        <div className="pointer-events-none absolute -right-32 top-10 h-64 w-64 rounded-full bg-emerald-500/10 blur-[100px] sm:h-80 sm:w-80" />
+        <div className="pointer-events-none absolute -left-24 top-40 h-56 w-56 rounded-full bg-teal-500/10 blur-[90px]" />
 
-        <div className="container-page grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-12">
-          <div className="order-2 space-y-6 lg:order-1 lg:col-span-6 lg:space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/[0.07] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300/95 sm:px-4 sm:text-[11px] sm:tracking-[0.2em]">
+        <div className="container-page">
+          <p className="mb-3 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-400/90 sm:mb-4 sm:text-[11px]">
+            Главный визуал · три языка
+          </p>
+
+          <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl ring-1 ring-white/10 sm:rounded-3xl">
+            <div className="relative flex min-h-[min(42vh,320px)] items-center justify-center bg-gradient-to-b from-slate-950 to-black px-2 py-6 sm:min-h-[min(50vh,400px)] sm:px-4 sm:py-8 md:min-h-[min(56vh,480px)] lg:min-h-[min(60vh,520px)]">
+              <img
+                key={heroBanners[heroIndex].src}
+                src={heroBanners[heroIndex].src}
+                alt={heroBanners[heroIndex].alt}
+                width={1920}
+                height={720}
+                className="h-auto w-full max-h-[min(38vh,300px)] object-contain object-center sm:max-h-[min(46vh,380px)] md:max-h-[min(52vh,440px)] lg:max-h-[min(56vh,500px)]"
+                decoding="async"
+                fetchPriority="high"
+              />
+            </div>
+            <div className="border-t border-white/10 bg-slate-950/95 px-3 py-3 sm:px-5 sm:py-4">
+              <p className="mb-3 text-center text-[11px] font-medium text-slate-400 sm:mb-3 sm:text-xs">
+                Баннер{" "}
+                <span className="text-emerald-400">{heroBanners[heroIndex].label}</span>
+                {" · "}
+                {heroIndex + 1} / {heroBanners.length}
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                <button
+                  type="button"
+                  onClick={prevHero}
+                  className="order-2 min-h-[44px] rounded-xl border border-slate-600 bg-slate-800/90 px-4 py-2.5 text-sm font-medium text-white transition hover:border-emerald-500/50 sm:order-1 sm:min-h-0 sm:px-5"
+                  aria-label="Предыдущий баннер"
+                >
+                  ← Назад
+                </button>
+                <div className="order-1 flex flex-wrap justify-center gap-2 sm:order-2">
+                  {heroBanners.map((b, i) => (
+                    <button
+                      key={b.src}
+                      type="button"
+                      onClick={() => setHeroIndex(i)}
+                      className={`min-h-[44px] min-w-[44px] rounded-full text-[10px] font-semibold uppercase tracking-wider transition sm:min-h-0 sm:min-w-0 sm:px-3 sm:py-1.5 sm:text-[11px] ${
+                        i === heroIndex
+                          ? "bg-emerald-500 text-slate-950 ring-2 ring-emerald-300/50"
+                          : "bg-slate-800 text-slate-400 ring-1 ring-white/10 hover:bg-slate-700 hover:text-white"
+                      }`}
+                      aria-label={`Баннер: ${b.label}`}
+                    >
+                      <span className="px-2 sm:px-0">{b.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={nextHero}
+                  className="order-3 min-h-[44px] rounded-xl border border-slate-600 bg-slate-800/90 px-4 py-2.5 text-sm font-medium text-white transition hover:border-emerald-500/50 sm:min-h-0 sm:px-5"
+                  aria-label="Следующий баннер"
+                >
+                  Вперёд →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mx-auto mt-8 max-w-3xl space-y-6 text-center sm:mt-10 sm:space-y-8">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/[0.07] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300/95 sm:px-4 sm:text-[11px]">
               <span className="relative flex h-2 w-2 shrink-0">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
@@ -116,7 +204,7 @@ export default function LandingPage() {
               COMEBACK.UZ
             </div>
 
-            <h1 className="text-balance text-3xl font-bold leading-[1.12] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-[2.75rem] xl:text-5xl">
+            <h1 className="text-balance text-3xl font-bold leading-[1.12] tracking-tight text-white sm:text-4xl md:text-5xl">
               Увидьте{" "}
               <span className="bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 bg-clip-text text-transparent">
                 Бухару, Самарканд и Хиву
@@ -124,23 +212,23 @@ export default function LandingPage() {
               такими, какими они были раньше
             </h1>
 
-            <p className="max-w-xl text-pretty text-sm leading-relaxed text-slate-400 sm:text-base md:text-lg">
+            <p className="mx-auto max-w-xl text-pretty text-sm leading-relaxed text-slate-400 sm:text-base md:text-lg">
               На исторической площади откройте камеру — поверх сегодняшнего
               города появятся реконструкции улиц, стен и жизни прошлых эпох.
             </p>
 
-            <div className="flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap">
+            <div className="flex flex-col items-stretch gap-3 min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:justify-center">
               <a href="#download" className="btn-primary px-6 py-3 text-center text-sm sm:px-8 sm:text-base">
                 Скачать приложение
               </a>
               <a href="#gallery" className="btn-outline px-6 py-3 text-center text-sm sm:px-8 sm:text-base">
-                Галерея сцен
+                Галерея кадров
               </a>
             </div>
 
             <div
               id="cities"
-              className="grid grid-cols-1 gap-2 min-[400px]:grid-cols-3 sm:max-w-xl sm:gap-3"
+              className="mx-auto grid max-w-xl grid-cols-1 gap-2 min-[400px]:grid-cols-3 sm:gap-3"
             >
               {[
                 { k: "Города", v: "в одном приложении" },
@@ -158,32 +246,9 @@ export default function LandingPage() {
               ))}
             </div>
           </div>
-
-          <div className="order-1 lg:order-2 lg:col-span-6">
-            <div className="relative mx-auto max-w-xl lg:max-w-none">
-              <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-emerald-500/25 via-transparent to-teal-500/20 opacity-80 blur-lg sm:rounded-3xl" />
-              <figure className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-900/80 shadow-2xl ring-1 ring-white/10 sm:rounded-3xl">
-                <img
-                  src={IMG.hero}
-                  alt="ComeBack — дополненная реальность в городах Узбекистана"
-                  width={1200}
-                  height={675}
-                  className="h-auto w-full align-middle"
-                  decoding="async"
-                  fetchPriority="high"
-                />
-                <figcaption className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-slate-950/90 px-3 py-2.5 text-[11px] text-slate-400 sm:px-4 sm:py-3 sm:text-xs">
-                  <span className="min-w-0 truncate">Ключевой баннер проекта</span>
-                  <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 font-medium text-emerald-300">
-                    Бухара · Самарканд · Хива
-                  </span>
-                </figcaption>
-              </figure>
-            </div>
-          </div>
         </div>
 
-        <div className="container-page mt-10 sm:mt-14">
+        <div className="container-page mt-8 sm:mt-10">
           <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5">
             {cities.map((city) => (
               <span
@@ -206,15 +271,35 @@ export default function LandingPage() {
           <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-12">
             <p className="section-eyebrow mb-2 sm:mb-3">Материалы</p>
             <h2 className="text-xl font-bold text-white sm:text-2xl md:text-3xl lg:text-4xl">
-              Атмосфера проекта — два визуала без повторов
+              Горизонтальные баннеры проекта
             </h2>
             <p className="mt-3 text-sm text-slate-400 sm:mt-4 sm:text-base">
-              Ниже — только уникальные баннеры. Постер приложения и сцены AR —
-              в галерее ниже.
+              Три отдельных макета — без повторов с главным херо и галереей.
             </p>
           </div>
 
-          <div className="mx-auto grid max-w-5xl gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-10">
+          <div className="mx-auto grid max-w-5xl gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            <article className="feature-card flex flex-col !p-0">
+              <div className="flex items-center justify-center bg-[#0a0f1a] p-3 sm:p-4">
+                <img
+                  src={IMG.wide0}
+                  alt="ComeBack — ключевой горизонтальный баннер"
+                  width={900}
+                  height={506}
+                  className="h-auto w-full max-h-[min(48vh,420px)] object-contain sm:max-h-[min(52vh,480px)]"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div className="border-t border-white/5 p-4 sm:p-5">
+                <h3 className="text-base font-semibold text-white sm:text-lg">
+                  Ключевой баннер
+                </h3>
+                <p className="mt-1.5 text-sm text-slate-400">
+                  Основной визуал для соцсетей и презентаций.
+                </p>
+              </div>
+            </article>
             <article className="feature-card flex flex-col !p-0">
               <div className="flex items-center justify-center bg-[#0a0f1a] p-3 sm:p-4">
                 <img
@@ -270,20 +355,20 @@ export default function LandingPage() {
           <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-10 md:mb-12">
             <p className="section-eyebrow mb-2 sm:mb-3">Галерея</p>
             <h2 className="text-xl font-bold text-white sm:text-2xl md:text-3xl lg:text-4xl">
-              Постер и сцены AR — каждый кадр один раз
+              Постер и дополнительные кадры
             </h2>
             <p className="mt-3 text-sm text-slate-400 sm:text-base">
-              Листайте: постер с магазинами приложений и кадры с площадок. На
-              телефоне удобнее в полноэкранном режиме браузера.
+              Здесь только вертикальный постер, второй визуал и сцена с
+              площадки — без трёх главных языковых баннеров сверху.
             </p>
           </div>
 
           <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-[#070d18] shadow-2xl ring-1 ring-white/5 sm:rounded-3xl">
             <div className="relative flex min-h-[min(52vh,420px)] items-center justify-center bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,#0f172a_0%,#020617_78%)] px-3 py-8 sm:min-h-[min(58vh,520px)] sm:px-6 sm:py-10 md:min-h-[min(62vh,580px)] md:py-12">
               <img
-                key={gallerySlides[slideIndex]}
-                src={gallerySlides[slideIndex]}
-                alt={`${galleryLabels[slideIndex]} — ComeBack`}
+                key={gallerySlides[galleryIndex]}
+                src={gallerySlides[galleryIndex]}
+                alt={`${galleryLabels[galleryIndex]} — ComeBack`}
                 width={1200}
                 height={1200}
                 className="max-h-[min(50vh,480px)] w-full object-contain drop-shadow-2xl sm:max-h-[min(54vh,560px)] md:max-h-[min(58vh,600px)]"
@@ -292,12 +377,12 @@ export default function LandingPage() {
             </div>
             <div className="border-t border-white/10 bg-slate-950/95 px-3 py-3 sm:px-5 sm:py-4">
               <p className="mb-3 text-center text-[11px] font-medium text-emerald-400/90 sm:mb-4 sm:text-xs">
-                {galleryLabels[slideIndex]} · {slideIndex + 1} / {gallerySlides.length}
+                {galleryLabels[galleryIndex]} · {galleryIndex + 1} / {gallerySlides.length}
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 <button
                   type="button"
-                  onClick={prevSlide}
+                  onClick={prevGallery}
                   className="order-2 min-h-[44px] rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-2.5 text-sm font-medium text-white transition active:scale-[0.98] hover:border-emerald-500/50 sm:order-1 sm:min-h-0 sm:px-5"
                   aria-label="Предыдущий слайд"
                 >
@@ -308,9 +393,9 @@ export default function LandingPage() {
                     <button
                       key={i}
                       type="button"
-                      onClick={() => setSlideIndex(i)}
+                      onClick={() => setGalleryIndex(i)}
                       className={`min-h-[44px] min-w-[44px] shrink-0 rounded-full transition-all sm:min-h-0 sm:min-w-0 ${
-                        i === slideIndex
+                        i === galleryIndex
                           ? "h-3 w-10 bg-emerald-400 sm:h-2.5"
                           : "h-3 w-3 bg-slate-600 hover:bg-slate-500 sm:h-2.5 sm:w-2.5"
                       }`}
@@ -320,7 +405,7 @@ export default function LandingPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={nextSlide}
+                  onClick={nextGallery}
                   className="order-3 min-h-[44px] rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-2.5 text-sm font-medium text-white transition active:scale-[0.98] hover:border-emerald-500/50 sm:min-h-0 sm:px-5"
                   aria-label="Следующий слайд"
                 >
@@ -472,6 +557,11 @@ export default function LandingPage() {
               Навигация
             </div>
             <ul className="mt-3 space-y-1.5 text-xs text-slate-400 sm:mt-4 sm:space-y-2 sm:text-sm">
+              <li>
+                <a href="#hero" className="hover:text-emerald-400">
+                  Главная
+                </a>
+              </li>
               <li>
                 <a href="#cities" className="hover:text-emerald-400">
                   Города
