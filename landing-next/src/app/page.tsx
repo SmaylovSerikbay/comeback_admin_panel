@@ -1,43 +1,24 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
-/** Каждый файл — ровно один раз на странице */
-const IMG = {
-  wide0: "/images/landing/banner1.png",
-  wideA: "/images/landing/banner2.png",
-  wideB: "/images/landing/banner3.png",
-} as const;
-
-/** Главный херо: широкие промо-баннеры (EN / RU / O‘zbek) */
 const heroBanners = [
   {
-    src: "/images/landing/ar-slide-3.png",
-    label: "English",
-    alt: "Augmented Reality in the Cities of Uzbekistan — ComeBack",
+    src: "/images/landing/6.png",
+    label: "Слайд 1",
+    alt: "ComeBack баннер 1",
   },
   {
-    src: "/images/landing/ar-slide-4.png",
-    label: "Русский",
-    alt: "Дополненная реальность в городах Узбекистана — ComeBack",
+    src: "/images/landing/7.png",
+    label: "Слайд 2",
+    alt: "ComeBack баннер 2",
   },
   {
-    src: "/images/landing/ar-slide-5.png",
-    label: "Oʻzbekcha",
-    alt: "O‘zbekiston shaharlarida qo‘shimcha reallik — ComeBack",
+    src: "/images/landing/8.png",
+    label: "Слайд 3",
+    alt: "ComeBack баннер 3",
   },
-] as const;
-
-const gallerySlides = [
-  "/images/landing/slideshow1_ru.png",
-  "/images/landing/slideshow2.png",
-  "/images/landing/ar-slide-2.png",
-] as const;
-
-const galleryLabels = [
-  "Постер приложения",
-  "Визуал AR",
-  "Сцена на площадке",
 ] as const;
 
 const features = [
@@ -71,34 +52,25 @@ const cities = ["Бухара", "Самарканд", "Хива", "Ташкен�
 
 export default function LandingPage() {
   const [heroIndex, setHeroIndex] = useState(0);
-  const [galleryIndex, setGalleryIndex] = useState(0);
 
   const nextHero = () =>
     setHeroIndex((i) => (i + 1) % heroBanners.length);
   const prevHero = () =>
     setHeroIndex((i) => (i - 1 + heroBanners.length) % heroBanners.length);
 
-  const nextGallery = () =>
-    setGalleryIndex((i) => (i + 1) % gallerySlides.length);
-  const prevGallery = () =>
-    setGalleryIndex((i) => (i - 1 + gallerySlides.length) % gallerySlides.length);
-
   return (
     <div className="landing-bg flex min-h-screen flex-col">
       <header className="glass-header">
         <div className="container-page flex min-h-16 flex-wrap items-center justify-between gap-y-3 py-3 sm:h-[4.25rem] sm:py-0">
           <a href="/" className="flex shrink-0 items-center gap-2.5 sm:gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 text-base font-bold text-slate-950 shadow-lg shadow-emerald-500/30 sm:h-10 sm:w-10 sm:text-lg">
-              C
-            </div>
-            <div className="min-w-0">
-              <div className="truncate text-sm font-bold tracking-tight text-white sm:text-base">
-                ComeBack
-              </div>
-              <div className="hidden text-[11px] text-slate-400 min-[380px]:block sm:text-xs">
-                AR по древним городам Узбекистана
-              </div>
-            </div>
+            <Image
+              src="/images/landing/CRAFT%20SHOP.png"
+              alt="Come Back AR"
+              width={336}
+              height={84}
+              className="h-8 w-auto sm:h-10"
+              priority
+            />
           </a>
 
           <nav className="flex w-full flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px] font-medium text-slate-300 sm:w-auto sm:justify-end sm:gap-x-6 sm:text-sm md:gap-x-8">
@@ -107,12 +79,6 @@ export default function LandingPage() {
             </a>
             <a href="#cities" className="transition hover:text-white">
               Города
-            </a>
-            <a href="#materials" className="transition hover:text-white">
-              Материалы
-            </a>
-            <a href="#gallery" className="transition hover:text-white">
-              Галерея
             </a>
             <a
               href="#download"
@@ -124,7 +90,7 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero: главные широкие баннеры (не галерея) */}
+      {/* Hero: основной слайдер с 3 баннерами */}
       <section
         id="hero"
         className="relative overflow-hidden border-b border-white/5 pb-10 pt-6 sm:pb-14 sm:pt-8 md:pt-10"
@@ -134,7 +100,7 @@ export default function LandingPage() {
 
         <div className="container-page">
           <p className="mb-3 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-400/90 sm:mb-4 sm:text-[11px]">
-            Главный визуал · три языка
+            Исторические персонажи · локации приложения
           </p>
 
           <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl ring-1 ring-white/10 sm:rounded-3xl">
@@ -221,8 +187,8 @@ export default function LandingPage() {
               <a href="#download" className="btn-primary px-6 py-3 text-center text-sm sm:px-8 sm:text-base">
                 Скачать приложение
               </a>
-              <a href="#gallery" className="btn-outline px-6 py-3 text-center text-sm sm:px-8 sm:text-base">
-                Галерея кадров
+              <a href="#cities" className="btn-outline px-6 py-3 text-center text-sm sm:px-8 sm:text-base">
+                Города и локации
               </a>
             </div>
 
@@ -258,161 +224,6 @@ export default function LandingPage() {
                 {city}
               </span>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Два горизонтальных макета — без третьего дубля */}
-      <section
-        id="materials"
-        className="border-b border-white/5 py-12 sm:py-16 md:py-20"
-      >
-        <div className="container-page">
-          <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-12">
-            <p className="section-eyebrow mb-2 sm:mb-3">Материалы</p>
-            <h2 className="text-xl font-bold text-white sm:text-2xl md:text-3xl lg:text-4xl">
-              Горизонтальные баннеры проекта
-            </h2>
-            <p className="mt-3 text-sm text-slate-400 sm:mt-4 sm:text-base">
-              Три отдельных макета — без повторов с главным херо и галереей.
-            </p>
-          </div>
-
-          <div className="mx-auto grid max-w-5xl gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-            <article className="feature-card flex flex-col !p-0">
-              <div className="flex items-center justify-center bg-[#0a0f1a] p-3 sm:p-4">
-                <img
-                  src={IMG.wide0}
-                  alt="ComeBack — ключевой горизонтальный баннер"
-                  width={900}
-                  height={506}
-                  className="h-auto w-full max-h-[min(48vh,420px)] object-contain sm:max-h-[min(52vh,480px)]"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <div className="border-t border-white/5 p-4 sm:p-5">
-                <h3 className="text-base font-semibold text-white sm:text-lg">
-                  Ключевой баннер
-                </h3>
-                <p className="mt-1.5 text-sm text-slate-400">
-                  Основной визуал для соцсетей и презентаций.
-                </p>
-              </div>
-            </article>
-            <article className="feature-card flex flex-col !p-0">
-              <div className="flex items-center justify-center bg-[#0a0f1a] p-3 sm:p-4">
-                <img
-                  src={IMG.wideA}
-                  alt="ComeBack — исторические города Узбекистана в AR"
-                  width={900}
-                  height={506}
-                  className="h-auto w-full max-h-[min(48vh,420px)] object-contain sm:max-h-[min(52vh,480px)]"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <div className="border-t border-white/5 p-4 sm:p-5">
-                <h3 className="text-base font-semibold text-white sm:text-lg">
-                  Города Шёлкового пути
-                </h3>
-                <p className="mt-1.5 text-sm text-slate-400">
-                  Бухара, Самарканд, Хива — в одном приложении.
-                </p>
-              </div>
-            </article>
-            <article className="feature-card flex flex-col !p-0">
-              <div className="flex items-center justify-center bg-[#0a0f1a] p-3 sm:p-4">
-                <img
-                  src={IMG.wideB}
-                  alt="ComeBack — путешествие во времени"
-                  width={900}
-                  height={506}
-                  className="h-auto w-full max-h-[min(48vh,420px)] object-contain sm:max-h-[min(52vh,480px)]"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <div className="border-t border-white/5 p-4 sm:p-5">
-                <h3 className="text-base font-semibold text-white sm:text-lg">
-                  Путешествие во времени
-                </h3>
-                <p className="mt-1.5 text-sm text-slate-400">
-                  Сравнивайте «тогда» и «сейчас» на одной площади.
-                </p>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      {/* Галерея: все остальные уникальные кадры */}
-      <section
-        id="gallery"
-        className="border-b border-white/5 bg-slate-950/40 py-12 sm:py-16 md:py-20"
-      >
-        <div className="container-page">
-          <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-10 md:mb-12">
-            <p className="section-eyebrow mb-2 sm:mb-3">Галерея</p>
-            <h2 className="text-xl font-bold text-white sm:text-2xl md:text-3xl lg:text-4xl">
-              Постер и дополнительные кадры
-            </h2>
-            <p className="mt-3 text-sm text-slate-400 sm:text-base">
-              Здесь только вертикальный постер, второй визуал и сцена с
-              площадки — без трёх главных языковых баннеров сверху.
-            </p>
-          </div>
-
-          <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-[#070d18] shadow-2xl ring-1 ring-white/5 sm:rounded-3xl">
-            <div className="relative flex min-h-[min(52vh,420px)] items-center justify-center bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,#0f172a_0%,#020617_78%)] px-3 py-8 sm:min-h-[min(58vh,520px)] sm:px-6 sm:py-10 md:min-h-[min(62vh,580px)] md:py-12">
-              <img
-                key={gallerySlides[galleryIndex]}
-                src={gallerySlides[galleryIndex]}
-                alt={`${galleryLabels[galleryIndex]} — ComeBack`}
-                width={1200}
-                height={1200}
-                className="max-h-[min(50vh,480px)] w-full object-contain drop-shadow-2xl sm:max-h-[min(54vh,560px)] md:max-h-[min(58vh,600px)]"
-                decoding="async"
-              />
-            </div>
-            <div className="border-t border-white/10 bg-slate-950/95 px-3 py-3 sm:px-5 sm:py-4">
-              <p className="mb-3 text-center text-[11px] font-medium text-emerald-400/90 sm:mb-4 sm:text-xs">
-                {galleryLabels[galleryIndex]} · {galleryIndex + 1} / {gallerySlides.length}
-              </p>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                <button
-                  type="button"
-                  onClick={prevGallery}
-                  className="order-2 min-h-[44px] rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-2.5 text-sm font-medium text-white transition active:scale-[0.98] hover:border-emerald-500/50 sm:order-1 sm:min-h-0 sm:px-5"
-                  aria-label="Предыдущий слайд"
-                >
-                  ← Назад
-                </button>
-                <div className="order-1 flex flex-wrap justify-center gap-1.5 sm:order-2 sm:gap-2">
-                  {gallerySlides.map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setGalleryIndex(i)}
-                      className={`min-h-[44px] min-w-[44px] shrink-0 rounded-full transition-all sm:min-h-0 sm:min-w-0 ${
-                        i === galleryIndex
-                          ? "h-3 w-10 bg-emerald-400 sm:h-2.5"
-                          : "h-3 w-3 bg-slate-600 hover:bg-slate-500 sm:h-2.5 sm:w-2.5"
-                      }`}
-                      aria-label={`Слайд ${i + 1}: ${galleryLabels[i]}`}
-                    />
-                  ))}
-                </div>
-                <button
-                  type="button"
-                  onClick={nextGallery}
-                  className="order-3 min-h-[44px] rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-2.5 text-sm font-medium text-white transition active:scale-[0.98] hover:border-emerald-500/50 sm:min-h-0 sm:px-5"
-                  aria-label="Следующий слайд"
-                >
-                  Вперёд →
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -565,16 +376,6 @@ export default function LandingPage() {
               <li>
                 <a href="#cities" className="hover:text-emerald-400">
                   Города
-                </a>
-              </li>
-              <li>
-                <a href="#materials" className="hover:text-emerald-400">
-                  Материалы
-                </a>
-              </li>
-              <li>
-                <a href="#gallery" className="hover:text-emerald-400">
-                  Галерея
                 </a>
               </li>
               <li>
