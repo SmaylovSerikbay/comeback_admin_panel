@@ -5,17 +5,17 @@ from .models import PaymentTransaction, PaymentCallback, UnityPaymentSession
 @admin.register(PaymentTransaction)
 class PaymentTransactionAdmin(admin.ModelAdmin):
     list_display = [
-        'order_id', 'amount', 'currency', 'status', 'unity_user_id',
+        'order_id', 'gateway', 'amount', 'currency', 'status', 'unity_user_id',
         'created_at', 'paid_at'
     ]
-    list_filter = ['status', 'currency', 'created_at', 'paid_at']
-    search_fields = ['order_id', 'unity_user_id', 'description']
+    list_filter = ['status', 'gateway', 'currency', 'created_at', 'paid_at']
+    search_fields = ['order_id', 'unity_user_id', 'description', 'milliy_transaction_id']
     readonly_fields = ['created_at', 'updated_at']
     ordering = ['-created_at']
     
     fieldsets = (
         ('Основная информация', {
-            'fields': ('order_id', 'amount', 'currency', 'status', 'description')
+            'fields': ('order_id', 'gateway', 'amount', 'currency', 'status', 'description')
         }),
         ('Unity данные', {
             'fields': ('unity_user_id', 'unity_session_id'),
@@ -23,6 +23,10 @@ class PaymentTransactionAdmin(admin.ModelAdmin):
         }),
         ('FreedomPay данные', {
             'fields': ('merchant_id', 'salt', 'signature', 'payment_id'),
+            'classes': ('collapse',)
+        }),
+        ('Milliy Ecom данные', {
+            'fields': ('milliy_transaction_id',),
             'classes': ('collapse',)
         }),
         ('Временные метки', {

@@ -12,6 +12,17 @@ USE_HTTPS=True
 FREEDOMPAY_MERCHANT_ID=552170
 FREEDOMPAY_SECRET_KEY=wUQ18x3bzP86MUzn
 
+# Milliy Ecom (NBU) Settings
+MILLIY_API_KEY=your_milliy_api_key
+MILLIY_SECRET_KEY=your_milliy_secret_key
+MILLIY_BASE_URL=https://ecom.nbu.uz/epgate
+# Учётные данные мерчанта для получения access token (/auth/token/init)
+MILLIY_USERNAME=
+MILLIY_PASSWORD=
+# Basic Auth для callback webhook (нужно согласовать URL с банком)
+MILLIY_CALLBACK_USERNAME=comeback_milliy
+MILLIY_CALLBACK_PASSWORD=comeback_milliy_cb_2025
+
 # Database settings
 POSTGRES_DB=comeback_admin
 POSTGRES_USER=comeback_user

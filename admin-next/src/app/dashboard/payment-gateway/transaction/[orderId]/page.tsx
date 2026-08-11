@@ -7,6 +7,7 @@ import { apiGet } from "@/lib/api";
 
 type Transaction = {
   order_id: string;
+  gateway: string;
   amount: number;
   currency: string;
   status: string;
@@ -16,6 +17,7 @@ type Transaction = {
   unity_session_id: string;
   payment_id: string | null;
   merchant_id: string;
+  milliy_transaction_id: string | null;
   created_at: string;
   updated_at: string;
   paid_at: string | null;
@@ -81,6 +83,8 @@ export default function TransactionDetailPage() {
         <dl className="grid gap-2 text-sm sm:grid-cols-2">
           <dt className="text-slate-500">Order ID</dt>
           <dd className="font-mono">{transaction.order_id}</dd>
+          <dt className="text-slate-500">Шлюз</dt>
+          <dd>{transaction.gateway === "milliy" ? "Milliy Ecom" : "FreedomPay"}</dd>
           <dt className="text-slate-500">Сумма</dt>
           <dd>
             {transaction.amount.toLocaleString()} {transaction.currency}

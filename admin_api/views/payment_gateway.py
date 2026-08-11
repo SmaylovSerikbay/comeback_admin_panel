@@ -8,13 +8,15 @@ from rest_framework import status
 from django.db import models
 
 from payment_gateway.models import PaymentTransaction, PaymentCallback
-from payment_gateway.views import get_base_url, generate_signature, MERCHANT_ID
+from payment_gateway.views import get_base_url, generate_signature, MERCHANT_ID, _create_milliy_transaction
+from payment_gateway import milliy_service
 from admin_api.permissions import IsAdminOrCashier
 
 
 def _serialize_transaction(t):
     return {
         "order_id": t.order_id,
+        "gateway": t.gateway,
         "amount": t.amount,
         "currency": t.currency,
         "status": t.status,
@@ -24,6 +26,7 @@ def _serialize_transaction(t):
         "unity_session_id": t.unity_session_id or "",
         "payment_id": t.payment_id,
         "merchant_id": t.merchant_id,
+        "milliy_transaction_id": t.milliy_transaction_id,
         "created_at": t.created_at.isoformat(),
         "updated_at": t.updated_at.isoformat(),
         "paid_at": t.paid_at.isoformat() if t.paid_at else None,
@@ -94,10 +97,11 @@ class PaymentGatewayTransactionDetailView(APIView):
 
 
 class PaymentGatewayTestPaymentView(APIView):
-    """Создание тестового платежа и получение URL для редиректа на FreedomPay."""
+    """Создание тестового платежа. gateway=freedom (по умолчанию) или gateway=milliy."""
     permission_classes = [IsAdminOrCashier]
 
     def post(self, request):
+        gateway = request.data.get("gateway", "freedom")
         amount = request.data.get("amount", 1000)
         description = request.data.get("description", "Test Payment")
         try:
@@ -106,6 +110,12 @@ class PaymentGatewayTestPaymentView(APIView):
             amount = 1000
         if amount <= 0:
             amount = 1000
+
+        if gateway == "milliy":
+            return self._create_milliy(amount, description)
+        return self._create_freedom(amount, description)
+
+    def _create_freedom(self, amount, description):
         transaction = PaymentTransaction.objects.create(
             order_id=f"test_{uuid.uuid4().hex[:16]}",
             amount=amount,
@@ -113,6 +123,7 @@ class PaymentGatewayTestPaymentView(APIView):
             description=str(description)[:500],
             salt=uuid.uuid4().hex[:16],
             merchant_id=MERCHANT_ID,
+            gateway="freedom",
         )
         base_url = get_base_url()
         params = {
@@ -133,4 +144,23 @@ class PaymentGatewayTestPaymentView(APIView):
         query_parts = [f"{k}={params[k]}" for k in sorted(params.keys())]
         query_parts.append(f"pg_sig={signature}")
         payment_url = f"https://api.freedompay.uz/payment.php?{'&'.join(query_parts)}"
-        return Response({"payment_url": payment_url, "order_id": transaction.order_id})
+        return Response({"payment_url": payment_url, "order_id": transaction.order_id, "gateway": "freedom"})
+
+    def _create_milliy(self, amount, description):
+        try:
+            transaction, payment_url = _create_milliy_transaction(
+                amount=amount,
+                description=str(description)[:500],
+                unity_user_id="admin_test",
+                source="admin_test",
+            )
+        except milliy_service.MilliyError as e:
+            return Response({"error": str(e)}, status=status.HTTP_502_BAD_GATEWAY)
+        return Response(
+            {
+                "payment_url": payment_url,
+                "order_id": transaction.order_id,
+                "milliy_transaction_id": transaction.milliy_transaction_id,
+                "gateway": "milliy",
+            }
+        )

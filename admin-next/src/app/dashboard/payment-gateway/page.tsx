@@ -6,6 +6,7 @@ import { apiGet } from "@/lib/api";
 
 type Transaction = {
   order_id: string;
+  gateway: string;
   amount: number;
   currency: string;
   status: string;
@@ -15,6 +16,7 @@ type Transaction = {
   unity_session_id: string;
   payment_id: string | null;
   merchant_id: string;
+  milliy_transaction_id: string | null;
   created_at: string;
   updated_at: string;
   paid_at: string | null;
@@ -62,11 +64,16 @@ export default function PaymentGatewayPage() {
 
   return (
     <div>
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-800">Эквайринг (FreedomPay)</h1>
-        <Link href="/dashboard/payment-gateway/test" className="btn-primary">
-          Тестовый платёж
-        </Link>
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold text-slate-800">Эквайринг</h1>
+        <div className="flex gap-2">
+          <Link href="/dashboard/payment-gateway/test" className="btn-secondary">
+            Тест FreedomPay
+          </Link>
+          <Link href="/dashboard/payment-gateway/milliy" className="btn-primary">
+            Тест Milliy Ecom
+          </Link>
+        </div>
       </div>
 
       {stats && (
@@ -106,6 +113,7 @@ export default function PaymentGatewayPage() {
               <thead>
                 <tr className="border-b border-slate-200 text-left text-slate-600">
                   <th className="pb-2 pr-4">Order ID</th>
+                  <th className="pb-2 pr-4">Шлюз</th>
                   <th className="pb-2 pr-4">Сумма</th>
                   <th className="pb-2 pr-4">Статус</th>
                   <th className="pb-2 pr-4">Дата</th>
@@ -116,6 +124,17 @@ export default function PaymentGatewayPage() {
                 {transactions.map((t) => (
                   <tr key={t.order_id} className="border-b border-slate-100">
                     <td className="py-2 pr-4 font-mono text-slate-800">{t.order_id}</td>
+                    <td className="py-2 pr-4">
+                      <span
+                        className={`rounded px-2 py-0.5 text-xs font-medium ${
+                          t.gateway === "milliy"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-slate-100 text-slate-700"
+                        }`}
+                      >
+                        {t.gateway === "milliy" ? "Milliy Ecom" : "FreedomPay"}
+                      </span>
+                    </td>
                     <td className="py-2 pr-4">
                       {t.amount.toLocaleString()} {t.currency}
                     </td>

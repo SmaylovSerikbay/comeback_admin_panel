@@ -18,8 +18,14 @@ class PaymentTransaction(models.Model):
         ('cancelled', 'Отменено'),
     ]
     
+    GATEWAY_CHOICES = [
+        ('freedom', 'FreedomPay'),
+        ('milliy', 'Milliy Ecom'),
+    ]
+    
     # Основные данные платежа
     order_id = models.CharField('ID заказа', max_length=100, unique=True)
+    gateway = models.CharField('Платёжный шлюз', max_length=20, choices=GATEWAY_CHOICES, default='freedom')
     amount = models.IntegerField('Сумма (в суммах)')
     currency = models.CharField('Валюта', max_length=10, default='UZS')
     status = models.CharField('Статус', max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -36,6 +42,9 @@ class PaymentTransaction(models.Model):
     merchant_id = models.CharField('Merchant ID', max_length=50, default='552170')
     salt = models.CharField('Соль', max_length=100)
     signature = models.CharField('Подпись', max_length=100, blank=True)
+    
+    # Milliy Ecom данные
+    milliy_transaction_id = models.CharField('Milliy Transaction ID', max_length=100, blank=True, null=True)
     
     # Временные метки
     created_at = models.DateTimeField('Создан', auto_now_add=True)

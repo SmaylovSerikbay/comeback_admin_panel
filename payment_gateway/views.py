@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.conf import settings
 from .models import PaymentTransaction, PaymentCallback, UnityPaymentSession
+from . import milliy_service
 from django.db import models
 from decouple import config
 
@@ -50,6 +51,41 @@ def log_message(msg):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     logger.info(f"[{timestamp}] {msg}")
     print(f"[{timestamp}] {msg}")
+
+
+def _create_milliy_transaction(amount, description, unity_user_id='', source=''):
+    """
+    Создание платежа через Milliy Ecom (REDIRECT).
+    Возвращает (transaction, payment_url).
+    """
+    order_id = str(uuid.uuid4())  # Milliy требует orderId в формате UUID
+    transaction = PaymentTransaction.objects.create(
+        order_id=order_id,
+        amount=amount,
+        currency='UZS',
+        description=description[:500],
+        unity_user_id=unity_user_id or '',
+        salt=uuid.uuid4().hex[:16],
+        merchant_id=(milliy_service.MILLIY_API_KEY or 'milliy')[:50],
+        gateway='milliy',
+    )
+
+    base_url = get_base_url()
+    success_url = f"{base_url}/payment-gateway/milliy/success/"
+    fail_url = f"{base_url}/payment-gateway/milliy/fail/"
+
+    milliy_tx_id, payment_url = milliy_service.init_payment(
+        amount_tiyin=amount * 100,  # Milliy работает в тийинах
+        order_id=order_id,
+        success_url=success_url,
+        failure_url=fail_url,
+        client_id=unity_user_id or None,
+    )
+    transaction.milliy_transaction_id = milliy_tx_id
+    transaction.save()
+
+    log_message(f"🎮 Milliy Ecom создал платёж: {transaction.order_id} на {amount} UZS ({source})")
+    return transaction, payment_url
 
 
 def generate_signature(params_dict, script_name="payment.php"):
@@ -156,7 +192,35 @@ def unity_create_payment(request):
             }, status=400)
         
         log_message(f"🎮 Unity create-payment: user_id={unity_user_id}, amount={amount}")
-        
+
+        gateway = data.get('gateway', 'freedom')
+
+        if gateway == 'milliy':
+            # Milliy Ecom (альтернативный эквайринг)
+            try:
+                transaction, payment_url = _create_milliy_transaction(
+                    amount=amount,
+                    description=description,
+                    unity_user_id=unity_user_id,
+                    source='unity',
+                )
+            except milliy_service.MilliyError as e:
+                log_message(f"❌ Ошибка Milliy Ecom при создании платежа: {e}")
+                return JsonResponse({
+                    'success': False,
+                    'error': str(e)
+                }, status=502)
+
+            return JsonResponse({
+                'success': True,
+                'order_id': transaction.order_id,
+                'milliy_transaction_id': transaction.milliy_transaction_id,
+                'payment_url': payment_url,
+                'amount': amount,
+                'currency': 'UZS',
+                'gateway': 'milliy'
+            })
+
         # Создаем сессию платежа
         session_id = f"unity_{uuid.uuid4().hex[:16]}"
         session = UnityPaymentSession.objects.create(
@@ -504,6 +568,140 @@ def freedompay_fail(request):
             except PaymentTransaction.DoesNotExist:
                 log_message(f"❌ Заказ {pg_order_id} не найден")
     
+    return redirect('/?payment=fail')
+
+
+def _check_milliy_basic_auth(request):
+    """Проверка Basic Auth для callback'ов Milliy Ecom."""
+    auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+    if not auth_header.startswith('Basic '):
+        return False
+    try:
+        import base64
+        decoded = base64.b64decode(auth_header[6:]).decode('utf-8')
+        username, _, password = decoded.partition(':')
+    except Exception:
+        return False
+    expected_user = milliy_service.MILLIY_CALLBACK_USERNAME
+    expected_pass = milliy_service.MILLIY_CALLBACK_PASSWORD
+    return username == expected_user and password == expected_pass
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def milliy_callback(request):
+    """
+    Callback от Milliy Ecom — уведомление о статусе операции.
+    Аутентификация: Basic Auth. Формат данных: JSON.
+    """
+    log_message("▶ MILLIY CALLBACK получен")
+    log_message(f"📨 Данные: {request.body.decode('utf-8', errors='replace')[:1000]}")
+
+    if not _check_milliy_basic_auth(request):
+        log_message("❌ Milliy callback: некорректные Basic Auth данные")
+        return HttpResponse("UNAUTHORIZED", status=401)
+
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        log_message(f"❌ Milliy callback: невалидный JSON: {e}")
+        return HttpResponse("ERROR", status=400)
+
+    order_id = data.get('orderId')
+    status = data.get('status')
+    transaction_id = data.get('transactionId')
+    error_code = data.get('errorCode')
+
+    if not order_id or not status:
+        log_message("❌ Milliy callback: нет orderId или status")
+        return HttpResponse("ERROR", status=400)
+
+    try:
+        transaction = PaymentTransaction.objects.get(order_id=order_id)
+    except PaymentTransaction.DoesNotExist:
+        log_message(f"❌ Milliy callback: заказ {order_id} не найден")
+        return HttpResponse("ERROR", status=400)
+
+    PaymentCallback.objects.create(
+        transaction=transaction,
+        callback_type=f"milliy_{status.lower()}",
+        raw_data=data,
+        processed=True,
+    )
+
+    if status == "SUCCESS":
+        log_message(f"✅ Milliy callback: платёж {order_id} успешен")
+        transaction.mark_as_paid(transaction_id or transaction.milliy_transaction_id)
+    elif status == "FAILED":
+        log_message(f"❌ Milliy callback: платёж {order_id} отклонён (errorCode={error_code})")
+        transaction.mark_as_failed()
+    elif status == "EXPIRED":
+        log_message(f"⚠️ Milliy callback: сессия {order_id} истекла")
+        transaction.status = 'cancelled'
+        transaction.save()
+    elif status == "REFUNDED":
+        log_message(f"↩️ Milliy callback: платёж {order_id} возвращён")
+        transaction.status = 'cancelled'
+        transaction.save()
+    else:
+        log_message(f"⚠️ Milliy callback: неизвестный статус {status} для {order_id}")
+
+    return HttpResponse("OK", status=200)
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def milliy_success(request):
+    """Страница успешного платежа Milliy Ecom."""
+    if request.GET:
+        log_message("✅ Получен GET запрос на milliy/success")
+        log_message(f"📨 GET параметры: {dict(request.GET)}")
+        order_id = request.GET.get('orderId') or request.GET.get('order_id')
+        if order_id:
+            try:
+                transaction = PaymentTransaction.objects.get(order_id=order_id)
+                if transaction.status == 'pending':
+                    transaction.mark_as_paid(transaction.milliy_transaction_id)
+                    PaymentCallback.objects.create(
+                        transaction=transaction,
+                        callback_type='milliy_success',
+                        raw_data=dict(request.GET),
+                        processed=True,
+                    )
+                    log_message(f"✅ Milliy: установлен статус 'success' для {order_id}")
+                else:
+                    log_message(f"ℹ️ Milliy: транзакция {order_id} уже в статусе {transaction.status}")
+            except PaymentTransaction.DoesNotExist:
+                log_message(f"❌ Milliy: заказ {order_id} не найден")
+
+    return redirect('/?payment=success')
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def milliy_fail(request):
+    """Страница неуспешного платежа Milliy Ecom."""
+    if request.GET:
+        log_message("❌ Получен GET запрос на milliy/fail")
+        log_message(f"📨 GET параметры: {dict(request.GET)}")
+        order_id = request.GET.get('orderId') or request.GET.get('order_id')
+        if order_id:
+            try:
+                transaction = PaymentTransaction.objects.get(order_id=order_id)
+                if transaction.status == 'pending':
+                    transaction.mark_as_failed()
+                    PaymentCallback.objects.create(
+                        transaction=transaction,
+                        callback_type='milliy_fail',
+                        raw_data=dict(request.GET),
+                        processed=True,
+                    )
+                    log_message(f"❌ Milliy: установлен статус 'failed' для {order_id}")
+                else:
+                    log_message(f"ℹ️ Milliy: транзакция {order_id} уже в статусе {transaction.status}")
+            except PaymentTransaction.DoesNotExist:
+                log_message(f"❌ Milliy: заказ {order_id} не найден")
+
     return redirect('/?payment=fail')
 
 

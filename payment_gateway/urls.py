@@ -16,4 +16,8 @@ urlpatterns = [
     path('freedompay/result/', views.freedompay_result, name='freedompay_result'),
     path('freedompay/success/', views.freedompay_success, name='freedompay_success'),
     path('freedompay/fail/', views.freedompay_fail, name='freedompay_fail'),
+    # Milliy Ecom callbacks
+    path('milliy/callback/', views.milliy_callback, name='milliy_callback'),
+    path('milliy/success/', views.milliy_success, name='milliy_success'),
+    path('milliy/fail/', views.milliy_fail, name='milliy_fail'),
 ]
