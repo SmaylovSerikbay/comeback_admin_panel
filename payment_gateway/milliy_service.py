@@ -207,7 +207,7 @@ def init_payment(amount_tiyin, order_id, success_url, failure_url, client_id=Non
     data = _post(f'{MILLIY_BASE_URL}/payment/init', payload, auth_token=token)
     tx = data['data']
     log_message(f'✅ Milliy Ecom: платёж создан orderId={order_id}, transactionId={tx["transactionId"]}')
-    return tx['transactionId'], tx['paymentUrl']
+    return tx['transactionId'], tx.get('url') or tx.get('paymentUrl')
 
 
 def check_status(order_id):

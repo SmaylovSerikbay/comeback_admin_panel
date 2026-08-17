@@ -40,7 +40,7 @@ def get_base_url():
     protocol = 'https' if USE_HTTPS else 'http'
     
     # Если используется домен, используем его, иначе IP
-    if SITE_DOMAIN and SITE_DOMAIN != 'admin.comeback.uz':
+    if SITE_DOMAIN:
         return f"{protocol}://{SITE_DOMAIN}"
     else:
         return SITE_URL
@@ -674,7 +674,8 @@ def milliy_success(request):
             except PaymentTransaction.DoesNotExist:
                 log_message(f"❌ Milliy: заказ {order_id} не найден")
 
-    return redirect('/?payment=success')
+    html = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Оплата прошла успешно</title><style>body{font-family:system-ui,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f0fdf4;} .card{text-align:center;padding:48px;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);} h1{color:#16a34a;margin-bottom:8px;} p{color:#666;margin-top:4px;}</style></head><body><div class="card"><h1>&#10003; Оплата прошла успешно!</h1><p>Спасибо за покупку. Вы можете закрыть эту страницу и вернуться в приложение.</p></div></body></html>'
+    return HttpResponse(html)
 
 
 @csrf_exempt
@@ -702,7 +703,8 @@ def milliy_fail(request):
             except PaymentTransaction.DoesNotExist:
                 log_message(f"❌ Milliy: заказ {order_id} не найден")
 
-    return redirect('/?payment=fail')
+    html = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Оплата не прошла</title><style>body{font-family:system-ui,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#fef2f2;} .card{text-align:center;padding:48px;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);} h1{color:#dc2626;margin-bottom:8px;} p{color:#666;margin-top:4px;}</style></head><body><div class="card"><h1>&#10007; Оплата не прошла</h1><p>Попробуйте снова или обратитесь в поддержку.</p></div></body></html>'
+    return HttpResponse(html)
 
 
 @login_required
