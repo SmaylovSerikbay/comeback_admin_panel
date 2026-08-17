@@ -73,12 +73,14 @@ def _create_milliy_transaction(amount, description, unity_user_id='', source='')
     base_url = get_base_url()
     success_url = f"{base_url}/payment-gateway/milliy/success/"
     fail_url = f"{base_url}/payment-gateway/milliy/fail/"
+    callback_url = f"{base_url}/payment-gateway/milliy/callback/"
 
     milliy_tx_id, payment_url = milliy_service.init_payment(
         amount_tiyin=amount * 100,  # Milliy работает в тийинах
         order_id=order_id,
         success_url=success_url,
         failure_url=fail_url,
+        callback_url=callback_url,
         client_id=unity_user_id or None,
     )
     transaction.milliy_transaction_id = milliy_tx_id
@@ -653,26 +655,29 @@ def milliy_callback(request):
 @require_http_methods(["GET", "POST"])
 def milliy_success(request):
     """Страница успешного платежа Milliy Ecom."""
-    if request.GET:
-        log_message("✅ Получен GET запрос на milliy/success")
-        log_message(f"📨 GET параметры: {dict(request.GET)}")
-        order_id = request.GET.get('orderId') or request.GET.get('order_id')
-        if order_id:
-            try:
-                transaction = PaymentTransaction.objects.get(order_id=order_id)
-                if transaction.status == 'pending':
-                    transaction.mark_as_paid(transaction.milliy_transaction_id)
-                    PaymentCallback.objects.create(
-                        transaction=transaction,
-                        callback_type='milliy_success',
-                        raw_data=dict(request.GET),
-                        processed=True,
-                    )
-                    log_message(f"✅ Milliy: установлен статус 'success' для {order_id}")
-                else:
-                    log_message(f"ℹ️ Milliy: транзакция {order_id} уже в статусе {transaction.status}")
-            except PaymentTransaction.DoesNotExist:
-                log_message(f"❌ Milliy: заказ {order_id} не найден")
+    log_message("✅ Получен запрос на milliy/success")
+    log_message(f"📨 GET параметры: {dict(request.GET)}")
+    order_id = request.GET.get('orderId') or request.GET.get('order_id')
+    if order_id:
+        try:
+            transaction = PaymentTransaction.objects.get(order_id=order_id)
+            if transaction.status == 'pending':
+                try:
+                    status_data = milliy_service.check_status(order_id)
+                    api_status = status_data.get('status', '')
+                    if api_status in ('APPROVED', 'SUCCESS'):
+                        transaction.mark_as_paid(status_data.get('transactionId', transaction.milliy_transaction_id))
+                        log_message(f"✅ Milliy: платёж {order_id} подтверждён API (APPROVED)")
+                    elif api_status == 'PENDING':
+                        log_message(f"⏳ Milliy: платёж {order_id} ещё PENDING, callback обновит")
+                    else:
+                        log_message(f"⚠️ Milliy: статус {api_status} для {order_id}")
+                except Exception as e:
+                    log_message(f"⚠️ Milliy: не удалось проверить статус {order_id}: {e}")
+            else:
+                log_message(f"ℹ️ Milliy: транзакция {order_id} уже в статусе {transaction.status}")
+        except PaymentTransaction.DoesNotExist:
+            log_message(f"❌ Milliy: заказ {order_id} не найден")
 
     html = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Оплата прошла успешно</title><style>body{font-family:system-ui,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f0fdf4;} .card{text-align:center;padding:48px;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);} h1{color:#16a34a;margin-bottom:8px;} p{color:#666;margin-top:4px;}</style></head><body><div class="card"><h1>&#10003; Оплата прошла успешно!</h1><p>Спасибо за покупку. Вы можете закрыть эту страницу и вернуться в приложение.</p></div></body></html>'
     return HttpResponse(html)

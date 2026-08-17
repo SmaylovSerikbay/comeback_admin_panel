@@ -186,12 +186,17 @@ def get_access_token(force=False):
     return _cache['access_token']
 
 
-def init_payment(amount_tiyin, order_id, success_url, failure_url, client_id=None, session_timeout=3600):
+def init_payment(amount_tiyin, order_id, success_url, failure_url, callback_url=None, client_id=None, session_timeout=3600):
     """
     Одноэтапный платёж (REDIRECT).
     amount_tiyin — сумма в минимальных единицах (тийнах); минимально 100000 (1000 UZS).
     Возвращает (transactionId, paymentUrl).
     """
+    sep = '&' if '?' in success_url else '?'
+    success_url_full = f"{success_url}{sep}orderId={order_id}"
+    fail_sep = '&' if '?' in failure_url else '?'
+    failure_url_full = f"{failure_url}{fail_sep}orderId={order_id}"
+
     token = get_access_token()
     payload = {
         'amount': int(amount_tiyin),
@@ -199,9 +204,11 @@ def init_payment(amount_tiyin, order_id, success_url, failure_url, client_id=Non
         'orderId': order_id,
         'paymentType': 'REDIRECT',
         'sessionTimeout': max(300, int(session_timeout)),
-        'successUrl': success_url,
-        'failureUrl': failure_url,
+        'successUrl': success_url_full,
+        'failureUrl': failure_url_full,
     }
+    if callback_url:
+        payload['callbackUrl'] = callback_url
     if client_id:
         payload['clientId'] = str(client_id)[:100]
     data = _post(f'{MILLIY_BASE_URL}/payment/init', payload, auth_token=token)
