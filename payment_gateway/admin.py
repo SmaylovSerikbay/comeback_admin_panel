@@ -9,7 +9,10 @@ class PaymentTransactionAdmin(admin.ModelAdmin):
         'created_at', 'paid_at'
     ]
     list_filter = ['status', 'gateway', 'currency', 'created_at', 'paid_at']
-    search_fields = ['order_id', 'unity_user_id', 'description', 'milliy_transaction_id']
+    search_fields = [
+        'order_id', 'unity_user_id', 'description', 'milliy_transaction_id',
+        'cybersource_transaction_id',
+    ]
     readonly_fields = ['created_at', 'updated_at']
     ordering = ['-created_at']
     
@@ -27,6 +30,10 @@ class PaymentTransactionAdmin(admin.ModelAdmin):
         }),
         ('Milliy Ecom данные', {
             'fields': ('milliy_transaction_id',),
+            'classes': ('collapse',)
+        }),
+        ('CyberSource данные', {
+            'fields': ('cybersource_transaction_id',),
             'classes': ('collapse',)
         }),
         ('Временные метки', {

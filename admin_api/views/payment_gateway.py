@@ -8,8 +8,14 @@ from rest_framework import status
 from django.db import models
 
 from payment_gateway.models import PaymentTransaction, PaymentCallback
-from payment_gateway.views import get_base_url, generate_signature, MERCHANT_ID, _create_milliy_transaction
-from payment_gateway import milliy_service
+from payment_gateway.views import (
+    get_base_url,
+    generate_signature,
+    MERCHANT_ID,
+    _create_milliy_transaction,
+    _create_cybersource_transaction,
+)
+from payment_gateway import milliy_service, cybersource_service
 from admin_api.permissions import IsAdminOrCashier
 
 
@@ -27,6 +33,7 @@ def _serialize_transaction(t):
         "payment_id": t.payment_id,
         "merchant_id": t.merchant_id,
         "milliy_transaction_id": t.milliy_transaction_id,
+        "cybersource_transaction_id": t.cybersource_transaction_id,
         "created_at": t.created_at.isoformat(),
         "updated_at": t.updated_at.isoformat(),
         "paid_at": t.paid_at.isoformat() if t.paid_at else None,
@@ -97,7 +104,7 @@ class PaymentGatewayTransactionDetailView(APIView):
 
 
 class PaymentGatewayTestPaymentView(APIView):
-    """Создание тестового платежа. gateway=freedom (по умолчанию) или gateway=milliy."""
+    """Создание тестового платежа: freedom (по умолчанию), milliy или cybersource."""
     permission_classes = [IsAdminOrCashier]
 
     def post(self, request):
@@ -113,6 +120,8 @@ class PaymentGatewayTestPaymentView(APIView):
 
         if gateway == "milliy":
             return self._create_milliy(amount, description)
+        if gateway == "cybersource":
+            return self._create_cybersource(amount, description)
         return self._create_freedom(amount, description)
 
     def _create_freedom(self, amount, description):
@@ -162,5 +171,23 @@ class PaymentGatewayTestPaymentView(APIView):
                 "order_id": transaction.order_id,
                 "milliy_transaction_id": transaction.milliy_transaction_id,
                 "gateway": "milliy",
+            }
+        )
+
+    def _create_cybersource(self, amount, description):
+        try:
+            transaction, payment_url = _create_cybersource_transaction(
+                amount=amount,
+                description=str(description)[:500],
+                unity_user_id="admin_test",
+                source="admin_test",
+            )
+        except cybersource_service.CyberSourceError as e:
+            return Response({"error": str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response(
+            {
+                "payment_url": payment_url,
+                "order_id": transaction.order_id,
+                "gateway": "cybersource",
             }
         )

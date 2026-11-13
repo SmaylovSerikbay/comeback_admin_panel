@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Оплата заказа {{ order_id }}</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #ecfdf5 0%, #f8fafc 55%, #eef2ff 100%);
+      padding: 24px;
+      color: #0f172a;
+    }
+    .card {
+      width: 100%;
+      max-width: 460px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 12px 40px rgba(15, 23, 42, .12);
+      padding: 28px;
+    }
+    .brand {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #059669;
+      margin-bottom: 18px;
+    }
+    .amount {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+    .desc { margin-top: 6px; color: #475569; font-size: 15px; }
+    .order { margin-top: 6px; color: #94a3b8; font-size: 12px; word-break: break-all; }
+    .divider { height: 1px; background: #e2e8f0; margin: 22px 0; }
+    #payment-buttons { min-height: 48px; }
+    #payment-form { min-height: 0; }
+    #payment-form:not(:empty) { margin-top: 18px; }
+    .status {
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #fffbeb;
+      color: #92400e;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .error {
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #fef2f2;
+      color: #b91c1c;
+      font-size: 14px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+    .hidden { display: none; }
+    .secure {
+      margin-top: 24px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">comeback</div>
+    <div class="amount">{{ amount }} {{ currency }}</div>
+    <div class="desc">{{ description|default:"Оплата" }}</div>
+    <div class="order">Заказ {{ order_id }}</div>
+    <div class="divider"></div>
+    <div id="payment-buttons"></div>
+    <div id="payment-form"></div>
+    <div id="status" class="status hidden"></div>
+    <div id="error" class="error hidden"></div>
+    <div class="secure">Защищённая оплата Visa / Mastercard &middot; CyberSource</div>
+  </div>
+
+  <script>
+    (function () {
+      var SESSION_JWT = "{{ capture_context|escapejs }}";
+      var CLIENT_LIBRARY = "{{ client_library|escapejs }}";
+      var CLIENT_LIBRARY_INTEGRITY = "{{ client_library_integrity|escapejs }}";
+      var ORDER_ID = "{{ order_id|escapejs }}";
+      var COMPLETE_URL = "{{ complete_url|escapejs }}";
+      var SUCCESS_URL = "{{ success_url|escapejs }}";
+      var FAIL_URL = "{{ fail_url|escapejs }}";
+
+      var statusEl = document.getElementById("status");
+      var errorEl = document.getElementById("error");
+
+      function showStatus(text) {
+        statusEl.textContent = text;
+        statusEl.classList.remove("hidden");
+        errorEl.classList.add("hidden");
+      }
+
+      function showError(text) {
+        errorEl.textContent = text;
+        errorEl.classList.remove("hidden");
+        statusEl.classList.add("hidden");
+      }
+
+      function redirectTo(base, kind) {
+        var sep = base.indexOf("?") === -1 ? "?" : "&";
+        window.location.assign(
+          base + sep + "orderId=" + encodeURIComponent(ORDER_ID) + "&result=" + kind
+        );
+      }
+
+      function loadScript(url, integrity) {
+        return new Promise(function (resolve, reject) {
+          var script = document.createElement("script");
+          script.src = url;
+          if (integrity) {
+            script.integrity = integrity;
+            script.crossOrigin = "anonymous";
+          }
+          script.onload = resolve;
+          script.onerror = function () {
+            reject(new Error("Не удалось загрузить платёжный модуль CyberSource."));
+          };
+          document.head.appendChild(script);
+        });
+      }
+
+      async function start() {
+        try {
+          await loadScript(CLIENT_LIBRARY, CLIENT_LIBRARY_INTEGRITY);
+          if (!window.VAS || typeof window.VAS.UnifiedCheckout !== "function") {
+            throw new Error("Платёжный модуль CyberSource недоступен.");
+          }
+
+          var client = await window.VAS.UnifiedCheckout(SESSION_JWT);
+          var checkout = await client.createCheckout({ autoProcessing: false });
+
+          try {
+            var transientToken = await checkout.mount({
+              paymentSelection: "#payment-buttons",
+              paymentScreen: "#payment-form"
+            });
+
+            showStatus("Обработка платежа…");
+
+            var resp = await fetch(COMPLETE_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                order_id: ORDER_ID,
+                transient_token: transientToken
+              })
+            });
+
+            var text = await resp.text();
+            var data = {};
+            try {
+              data = text ? JSON.parse(text) : {};
+            } catch (e) {
+              data = { status: "error", error: text };
+            }
+
+            if (data.status === "success") {
+              redirectTo(SUCCESS_URL, "success");
+              return;
+            }
+            if (data.status === "pending") {
+              showStatus(
+                "Платёж обрабатывается. Вы можете закрыть эту страницу — " +
+                "статус обновится автоматически."
+              );
+              return;
+            }
+            if (data.status === "error") {
+              showError(data.error || "Ошибка обработки платежа. Попробуйте снова.");
+              return;
+            }
+            redirectTo(FAIL_URL, "failed");
+          } finally {
+            try { checkout.destroy(); } catch (e) {}
+            try { client.destroy(); } catch (e) {}
+          }
+        } catch (e) {
+          showError(e && e.message ? e.message : "Не удалось запустить оплату.");
+        }
+      }
+
+      start();
+    })();
+  </script>
+</body>
+</html>

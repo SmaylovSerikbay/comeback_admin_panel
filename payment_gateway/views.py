@@ -13,9 +13,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.utils.html import escape
 from django.conf import settings
 from .models import PaymentTransaction, PaymentCallback, UnityPaymentSession
-from . import milliy_service
+from . import milliy_service, cybersource_service
 from django.db import models
 from decouple import config
 
@@ -88,6 +89,74 @@ def _create_milliy_transaction(amount, description, unity_user_id='', source='')
 
     log_message(f"🎮 Milliy Ecom создал платёж: {transaction.order_id} на {amount} UZS ({source})")
     return transaction, payment_url
+
+
+def _create_cybersource_transaction(amount, description, unity_user_id='', source=''):
+    """
+    Создание платежа CyberSource Unified Checkout (Visa/Mastercard).
+    Возвращает (transaction, checkout_url) — capture context создаётся на странице оплаты.
+    """
+    if not cybersource_service.is_configured():
+        raise cybersource_service.CyberSourceConfigError(
+            cybersource_service.configuration_error()
+        )
+
+    order_id = str(uuid.uuid4())
+    transaction = PaymentTransaction.objects.create(
+        order_id=order_id,
+        amount=amount,
+        currency='UZS',
+        description=description[:500],
+        unity_user_id=unity_user_id or '',
+        salt=uuid.uuid4().hex[:16],
+        merchant_id=(cybersource_service.CYBERSOURCE_MERCHANT_ID or 'cybersource')[:50],
+        gateway='cybersource',
+    )
+
+    payment_url = (
+        f"{get_base_url()}/payment-gateway/cybersource/checkout/"
+        f"?order_id={transaction.order_id}"
+    )
+    log_message(f"💳 CyberSource создал заказ: {transaction.order_id} на {amount} UZS ({source})")
+    return transaction, payment_url
+
+
+def _sync_cybersource_status(transaction):
+    """Обновить статус pending-транзакции CyberSource через Payments API."""
+    if transaction.gateway != 'cybersource' or transaction.status != 'pending':
+        return transaction
+
+    transaction_id = transaction.cybersource_transaction_id or transaction.payment_id
+    if not transaction_id:
+        return transaction
+
+    try:
+        result = cybersource_service.get_payment(transaction_id)
+    except cybersource_service.CyberSourceError as e:
+        log_message(f"⚠️ CyberSource: не удалось проверить статус {transaction.order_id}: {e}")
+        return transaction
+
+    status = (result.get('status') or '').upper()
+    PaymentCallback.objects.create(
+        transaction=transaction,
+        callback_type='cybersource_status_check',
+        raw_data=result,
+        processed=True,
+    )
+
+    if cybersource_service.is_success_status(status):
+        transaction.mark_as_paid(result.get('id') or transaction_id)
+        transaction.cybersource_transaction_id = result.get('id') or transaction_id
+        transaction.save(update_fields=['cybersource_transaction_id'])
+        log_message(f"✅ CyberSource: платёж {transaction.order_id} подтверждён ({status})")
+    elif cybersource_service.is_failed_status(status):
+        transaction.mark_as_failed()
+        log_message(f"❌ CyberSource: платёж {transaction.order_id} отклонён ({status})")
+    else:
+        transaction.save(update_fields=['updated_at'])
+        log_message(f"⏳ CyberSource: платёж {transaction.order_id} в статусе {status}")
+
+    return transaction
 
 
 def generate_signature(params_dict, script_name="payment.php"):
@@ -223,6 +292,31 @@ def unity_create_payment(request):
                 'gateway': 'milliy'
             })
 
+        if gateway == 'cybersource':
+            # CyberSource Unified Checkout (Visa/Mastercard)
+            try:
+                transaction, payment_url = _create_cybersource_transaction(
+                    amount=amount,
+                    description=description,
+                    unity_user_id=unity_user_id,
+                    source='unity',
+                )
+            except cybersource_service.CyberSourceError as e:
+                log_message(f"❌ Ошибка CyberSource при создании платежа: {e}")
+                return JsonResponse({
+                    'success': False,
+                    'error': str(e)
+                }, status=503)
+
+            return JsonResponse({
+                'success': True,
+                'order_id': transaction.order_id,
+                'payment_url': payment_url,
+                'amount': amount,
+                'currency': 'UZS',
+                'gateway': 'cybersource'
+            })
+
         # Создаем сессию платежа
         session_id = f"unity_{uuid.uuid4().hex[:16]}"
         session = UnityPaymentSession.objects.create(
@@ -324,6 +418,13 @@ def unity_check_payment_status(request):
                 'error': 'Transaction not found'
             }, status=404)
         
+        if (
+            transaction.gateway == 'cybersource'
+            and transaction.status == 'pending'
+            and (timezone.now() - transaction.updated_at).total_seconds() >= 30
+        ):
+            transaction = _sync_cybersource_status(transaction)
+
         log_message(f"🎮 Unity запрашивает статус для {transaction.order_id}: {transaction.status}")
         
         return JsonResponse({
@@ -710,6 +811,293 @@ def milliy_fail(request):
 
     html = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Оплата не прошла</title><style>body{font-family:system-ui,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#fef2f2;} .card{text-align:center;padding:48px;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);} h1{color:#dc2626;margin-bottom:8px;} p{color:#666;margin-top:4px;}</style></head><body><div class="card"><h1>&#10007; Оплата не прошла</h1><p>Попробуйте снова или обратитесь в поддержку.</p></div></body></html>'
     return HttpResponse(html)
+
+
+def _cybersource_message_page(title, message, kind='error'):
+    palette = {
+        'success': ('#16a34a', '#f0fdf4', '&#10003;'),
+        'pending': ('#d97706', '#fffbeb', '&#9203;'),
+        'error': ('#dc2626', '#fef2f2', '&#10007;'),
+    }
+    accent, background, icon = palette.get(kind, palette['error'])
+    title_safe = escape(title)
+    message_safe = escape(message).replace('\n', '<br>')
+    return (
+        '<!DOCTYPE html><html><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        f'<title>{title_safe}</title><style>'
+        'body{font-family:system-ui,sans-serif;display:flex;justify-content:center;'
+        f'align-items:center;min-height:100vh;margin:0;background:{background};}}'
+        '.card{text-align:center;padding:48px;background:#fff;border-radius:16px;'
+        'box-shadow:0 4px 24px rgba(0,0,0,.08);max-width:440px;}'
+        f'h1{{color:{accent};margin-bottom:8px;font-size:24px;}}'
+        'p{color:#666;margin-top:4px;line-height:1.5;}'
+        f'</style></head><body><div class="card"><h1>{icon} {title_safe}</h1>'
+        f'<p>{message_safe}</p></div></body></html>'
+    )
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def cybersource_checkout(request):
+    """Страница оплаты CyberSource Unified Checkout (Visa/Mastercard)."""
+    order_id = request.GET.get('order_id')
+    if not order_id:
+        return HttpResponse(
+            _cybersource_message_page('Ошибка', 'Не указан номер заказа.', 'error'),
+            status=400,
+        )
+
+    transaction = PaymentTransaction.objects.filter(
+        order_id=order_id, gateway='cybersource'
+    ).first()
+    if not transaction:
+        return HttpResponse(
+            _cybersource_message_page('Заказ не найден', 'Не удалось найти платёж.', 'error'),
+            status=404,
+        )
+
+    base_url = get_base_url()
+    if transaction.status == 'success':
+        return redirect(
+            f'{base_url}/payment-gateway/cybersource/success/?orderId={order_id}'
+        )
+    if transaction.status != 'pending':
+        return redirect(
+            f'{base_url}/payment-gateway/cybersource/fail/?orderId={order_id}'
+        )
+
+    try:
+        capture_context = cybersource_service.create_capture_context(
+            amount=transaction.amount,
+            currency=transaction.currency,
+            order_id=transaction.order_id,
+            target_origins=[base_url],
+        )
+        client_library, client_library_integrity = (
+            cybersource_service.extract_client_library(capture_context)
+        )
+    except cybersource_service.CyberSourceError as e:
+        log_message(f"❌ CyberSource checkout {order_id}: {e}")
+        return HttpResponse(
+            _cybersource_message_page('Ошибка оплаты', str(e), 'error'),
+            status=502,
+        )
+
+    return render(request, 'payment_gateway/cybersource_checkout.html', {
+        'order_id': transaction.order_id,
+        'amount': transaction.amount,
+        'currency': transaction.currency,
+        'description': transaction.description,
+        'capture_context': capture_context,
+        'client_library': client_library,
+        'client_library_integrity': client_library_integrity,
+        'complete_url': f'{base_url}/payment-gateway/cybersource/complete/',
+        'success_url': f'{base_url}/payment-gateway/cybersource/success/',
+        'fail_url': f'{base_url}/payment-gateway/cybersource/fail/',
+    })
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def cybersource_complete(request):
+    """Авторизация платежа по transient token из Unified Checkout."""
+    try:
+        payload = json.loads(request.body.decode('utf-8') or '{}')
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        return JsonResponse({
+            'success': False, 'status': 'error', 'error': f'Invalid JSON: {e}'
+        }, status=400)
+
+    order_id = payload.get('order_id')
+    transient_token = payload.get('transient_token')
+    if not order_id or not transient_token:
+        return JsonResponse({
+            'success': False, 'status': 'error',
+            'error': 'Missing order_id or transient_token'
+        }, status=400)
+
+    transaction = PaymentTransaction.objects.filter(
+        order_id=order_id, gateway='cybersource'
+    ).first()
+    if not transaction:
+        return JsonResponse({
+            'success': False, 'status': 'error', 'error': 'Transaction not found'
+        }, status=404)
+
+    if transaction.status == 'success':
+        return JsonResponse({
+            'success': True, 'status': 'success', 'order_id': order_id
+        })
+    if transaction.status in ('failed', 'cancelled'):
+        return JsonResponse({
+            'success': True, 'status': transaction.status, 'order_id': order_id
+        })
+
+    try:
+        result = cybersource_service.authorize_payment(
+            transient_token=transient_token,
+            amount=transaction.amount,
+            currency=transaction.currency,
+            order_id=transaction.order_id,
+        )
+    except cybersource_service.CyberSourceError as e:
+        log_message(f"❌ CyberSource authorize {order_id}: {e}")
+        PaymentCallback.objects.create(
+            transaction=transaction,
+            callback_type='cybersource_error',
+            raw_data={'error': str(e), 'status_code': e.status_code},
+            processed=False,
+        )
+        if e.status_code in (400, 422):
+            transaction.mark_as_failed()
+        return JsonResponse({
+            'success': False,
+            'status': 'error',
+            'error': str(e),
+            'cybersource_status_code': e.status_code,
+        }, status=502)
+
+    PaymentCallback.objects.create(
+        transaction=transaction,
+        callback_type='cybersource_authorization',
+        raw_data=result,
+        processed=True,
+    )
+
+    status = (result.get('status') or '').upper()
+    transaction_id = result.get('id')
+    message = cybersource_service.response_message(result)
+
+    if cybersource_service.is_success_status(status):
+        transaction.mark_as_paid(transaction_id)
+        transaction.cybersource_transaction_id = transaction_id
+        transaction.save(update_fields=['cybersource_transaction_id'])
+        log_message(f"✅ CyberSource: заказ {order_id} оплачен ({status})")
+        return JsonResponse({
+            'success': True,
+            'status': 'success',
+            'order_id': order_id,
+            'cybersource_status': status,
+            'transaction_id': transaction_id,
+        })
+
+    if cybersource_service.is_pending_status(status):
+        transaction.payment_id = transaction_id
+        transaction.cybersource_transaction_id = transaction_id
+        transaction.save(update_fields=['payment_id', 'cybersource_transaction_id'])
+        log_message(f"⏳ CyberSource: заказ {order_id} в статусе {status}")
+        return JsonResponse({
+            'success': True,
+            'status': 'pending',
+            'order_id': order_id,
+            'cybersource_status': status,
+            'transaction_id': transaction_id,
+            'message': message,
+        })
+
+    transaction.mark_as_failed()
+    transaction.cybersource_transaction_id = transaction_id
+    transaction.save(update_fields=['cybersource_transaction_id'])
+    log_message(f"❌ CyberSource: заказ {order_id} отклонён ({status}) {message}")
+    return JsonResponse({
+        'success': True,
+        'status': 'failed',
+        'order_id': order_id,
+        'cybersource_status': status,
+        'transaction_id': transaction_id,
+        'error': message,
+    })
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def cybersource_success(request):
+    """Страница успешного платежа CyberSource."""
+    order_id = request.GET.get('orderId') or request.GET.get('order_id')
+    transaction = None
+    if order_id:
+        transaction = PaymentTransaction.objects.filter(
+            order_id=order_id, gateway='cybersource'
+        ).first()
+        if transaction:
+            transaction = _sync_cybersource_status(transaction)
+            log_message(
+                f"ℹ️ CyberSource success page: {order_id} -> {transaction.status}"
+            )
+
+    if not transaction:
+        return HttpResponse(
+            _cybersource_message_page('Заказ не найден', 'Не удалось найти платёж.', 'error'),
+            status=404,
+        )
+    if transaction.status == 'success':
+        return HttpResponse(_cybersource_message_page(
+            'Оплата прошла успешно!',
+            'Спасибо за покупку. Вы можете закрыть эту страницу и вернуться в приложение.',
+            'success',
+        ))
+    if transaction.status == 'pending':
+        return HttpResponse(_cybersource_message_page(
+            'Платёж обрабатывается',
+            'Мы получили ваш платёж и обрабатываем его. Вы можете закрыть эту '
+            'страницу — статус обновится автоматически.',
+            'pending',
+        ))
+    return HttpResponse(_cybersource_message_page(
+        'Оплата не прошла',
+        'Платёж был отклонён. Попробуйте снова или обратитесь в поддержку.',
+        'error',
+    ))
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def cybersource_fail(request):
+    """Страница неуспешного платежа CyberSource."""
+    order_id = request.GET.get('orderId') or request.GET.get('order_id')
+    transaction = None
+    if order_id:
+        transaction = PaymentTransaction.objects.filter(
+            order_id=order_id, gateway='cybersource'
+        ).first()
+        if transaction and transaction.status == 'pending':
+            if transaction.cybersource_transaction_id or transaction.payment_id:
+                transaction = _sync_cybersource_status(transaction)
+            else:
+                transaction.mark_as_failed()
+                PaymentCallback.objects.create(
+                    transaction=transaction,
+                    callback_type='cybersource_fail_redirect',
+                    raw_data={'query': dict(request.GET)},
+                    processed=True,
+                )
+                log_message(
+                    f"❌ CyberSource: заказ {order_id} помечен failed по fail-редиректу"
+                )
+        if transaction:
+            log_message(
+                f"ℹ️ CyberSource fail page: {order_id} -> {transaction.status}"
+            )
+
+    if transaction and transaction.status == 'success':
+        return HttpResponse(_cybersource_message_page(
+            'Оплата прошла успешно!',
+            'Платёж был подтверждён. Вы можете закрыть эту страницу.',
+            'success',
+        ))
+    if transaction and transaction.status == 'pending':
+        return HttpResponse(_cybersource_message_page(
+            'Платёж обрабатывается',
+            'Статус платежа ещё не финальный. Вернитесь в приложение и '
+            'проверьте статус позже.',
+            'pending',
+        ))
+    return HttpResponse(_cybersource_message_page(
+        'Оплата не прошла',
+        'Платёж был отклонён. Попробуйте снова или обратитесь в поддержку.',
+        'error',
+    ))
 
 
 @login_required

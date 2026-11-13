@@ -21,6 +21,7 @@ class PaymentTransaction(models.Model):
     GATEWAY_CHOICES = [
         ('freedom', 'FreedomPay'),
         ('milliy', 'Milliy Ecom'),
+        ('cybersource', 'CyberSource (Visa/Mastercard)'),
     ]
     
     # Основные данные платежа
@@ -45,6 +46,9 @@ class PaymentTransaction(models.Model):
     
     # Milliy Ecom данные
     milliy_transaction_id = models.CharField('Milliy Transaction ID', max_length=100, blank=True, null=True)
+
+    # CyberSource данные
+    cybersource_transaction_id = models.CharField('CyberSource Transaction ID', max_length=100, blank=True, null=True)
     
     # Временные метки
     created_at = models.DateTimeField('Создан', auto_now_add=True)
@@ -92,7 +96,7 @@ class PaymentCallback(models.Model):
     """Модель для хранения callback'ов от платежной системы"""
     
     transaction = models.ForeignKey(PaymentTransaction, on_delete=models.CASCADE, related_name='callbacks')
-    callback_type = models.CharField('Тип callback', max_length=20)  # 'check', 'result', 'success', 'fail'
+    callback_type = models.CharField('Тип callback', max_length=50)  # 'check', 'result', 'success', 'fail'
     raw_data = models.JSONField('Сырые данные', default=dict)
     processed = models.BooleanField('Обработан', default=False)
     created_at = models.DateTimeField('Получен', auto_now_add=True)

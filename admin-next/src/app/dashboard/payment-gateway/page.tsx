@@ -30,6 +30,18 @@ type Stats = {
   total_amount: number;
 };
 
+function gatewayLabel(gateway: string): string {
+  if (gateway === "milliy") return "Milliy Ecom";
+  if (gateway === "cybersource") return "CyberSource";
+  return "FreedomPay";
+}
+
+function gatewayClass(gateway: string): string {
+  if (gateway === "milliy") return "bg-blue-100 text-blue-700";
+  if (gateway === "cybersource") return "bg-violet-100 text-violet-700";
+  return "bg-slate-100 text-slate-700";
+}
+
 export default function PaymentGatewayPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -70,8 +82,11 @@ export default function PaymentGatewayPage() {
           <Link href="/dashboard/payment-gateway/test" className="btn-secondary">
             Тест FreedomPay
           </Link>
-          <Link href="/dashboard/payment-gateway/milliy" className="btn-primary">
+          <Link href="/dashboard/payment-gateway/milliy" className="btn-secondary">
             Тест Milliy Ecom
+          </Link>
+          <Link href="/dashboard/payment-gateway/cybersource" className="btn-primary">
+            Тест CyberSource
           </Link>
         </div>
       </div>
@@ -126,13 +141,11 @@ export default function PaymentGatewayPage() {
                     <td className="py-2 pr-4 font-mono text-slate-800">{t.order_id}</td>
                     <td className="py-2 pr-4">
                       <span
-                        className={`rounded px-2 py-0.5 text-xs font-medium ${
-                          t.gateway === "milliy"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-slate-100 text-slate-700"
-                        }`}
+                        className={`rounded px-2 py-0.5 text-xs font-medium ${gatewayClass(
+                          t.gateway
+                        )}`}
                       >
-                        {t.gateway === "milliy" ? "Milliy Ecom" : "FreedomPay"}
+                        {gatewayLabel(t.gateway)}
                       </span>
                     </td>
                     <td className="py-2 pr-4">

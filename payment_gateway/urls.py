@@ -20,4 +20,9 @@ urlpatterns = [
     path('milliy/callback/', views.milliy_callback, name='milliy_callback'),
     path('milliy/success/', views.milliy_success, name='milliy_success'),
     path('milliy/fail/', views.milliy_fail, name='milliy_fail'),
+    # CyberSource Unified Checkout (Visa/Mastercard)
+    path('cybersource/checkout/', views.cybersource_checkout, name='cybersource_checkout'),
+    path('cybersource/complete/', views.cybersource_complete, name='cybersource_complete'),
+    path('cybersource/success/', views.cybersource_success, name='cybersource_success'),
+    path('cybersource/fail/', views.cybersource_fail, name='cybersource_fail'),
 ]

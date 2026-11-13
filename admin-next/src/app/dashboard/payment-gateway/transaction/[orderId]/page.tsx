@@ -18,6 +18,7 @@ type Transaction = {
   payment_id: string | null;
   merchant_id: string;
   milliy_transaction_id: string | null;
+  cybersource_transaction_id: string | null;
   created_at: string;
   updated_at: string;
   paid_at: string | null;
@@ -84,7 +85,13 @@ export default function TransactionDetailPage() {
           <dt className="text-slate-500">Order ID</dt>
           <dd className="font-mono">{transaction.order_id}</dd>
           <dt className="text-slate-500">Шлюз</dt>
-          <dd>{transaction.gateway === "milliy" ? "Milliy Ecom" : "FreedomPay"}</dd>
+          <dd>
+            {transaction.gateway === "milliy"
+              ? "Milliy Ecom"
+              : transaction.gateway === "cybersource"
+              ? "CyberSource (Visa/Mastercard)"
+              : "FreedomPay"}
+          </dd>
           <dt className="text-slate-500">Сумма</dt>
           <dd>
             {transaction.amount.toLocaleString()} {transaction.currency}
@@ -109,6 +116,8 @@ export default function TransactionDetailPage() {
           <dd>{transaction.unity_user_id || "—"}</dd>
           <dt className="text-slate-500">Payment ID</dt>
           <dd>{transaction.payment_id || "—"}</dd>
+          <dt className="text-slate-500">CyberSource ID</dt>
+          <dd>{transaction.cybersource_transaction_id || "—"}</dd>
           <dt className="text-slate-500">Создан</dt>
           <dd>{new Date(transaction.created_at).toLocaleString("ru")}</dd>
           {transaction.paid_at && (
