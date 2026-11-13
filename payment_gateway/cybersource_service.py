@@ -159,7 +159,6 @@ def _build_headers(method, resource, body_bytes=b''):
             f'headers="{signed_headers}", signature="{signature}"'
         ),
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
     }
     if digest:
         headers['Digest'] = f'SHA-256={digest}'
