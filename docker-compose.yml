@@ -124,7 +124,7 @@ services:
     volumes:
       - ./nginx/ssl:/etc/letsencrypt
       - ./nginx/www:/var/www/certbot
-    command: certonly --webroot --webroot-path=/var/www/certbot --email admin@comeback.uz --agree-tos --no-eff-email -d admin.comeback.uz
+    command: renew --webroot --webroot-path=/var/www/certbot --email admin@comeback.uz --agree-tos --no-eff-email
     depends_on:
       - nginx
     networks:
